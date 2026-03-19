@@ -125,8 +125,29 @@
   }
 
   .huge-watermark {
-    @apply font-heading text-[240px] text-foreground/5  -mt-5 pointer-events-none select-none font-medium text-center -ml-4;
+    @apply font-heading text-foreground/5 -mt-5 pointer-events-none select-none font-medium text-center overflow-hidden;
+    font-size: clamp(72px, 18vw, 235px);
+    letter-spacing: -0.0em;
+    line-height: 0.85;
+    
   }
+
+  @media (max-width: 1024px) {
+  .huge-watermark {
+      font-size: clamp(72px, 18vw, 155px);
+
+    line-height: 0.82;
+  }
+}
+
+@media (max-width: 640px) {
+  .huge-watermark {
+    font-size: clamp(34px, 11vw, 72px);
+    letter-spacing: -0.02em;
+    line-height: 0.9;
+    margin-top: 0;
+  }
+}
 
   .product-card {
     @apply relative border border-border bg-surface rounded-[20px] overflow-hidden shadow-sm transition-all duration-200 min-h-[360px] hover:-translate-y-2 hover:shadow-md hover:border-secondary/55;

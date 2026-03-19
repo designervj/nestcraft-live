@@ -2,23 +2,23 @@
 
 import React, { useState, useRef } from 'react';
 import { motion } from 'motion/react';
-import { 
-  ArrowRight, 
-  Truck, 
-  ShieldCheck, 
-  RefreshCcw, 
-  Sparkles, 
-  PenTool, 
-  Hammer, 
-  Package, 
-  Star, 
-  Heart, 
-  ChevronLeft, 
-  ChevronRight, 
-  CheckCircle2, 
-  Plus, 
-  Minus, 
-  ArrowUp 
+import {
+  ArrowRight,
+  Truck,
+  ShieldCheck,
+  RefreshCcw,
+  Sparkles,
+  PenTool,
+  Hammer,
+  Package,
+  Star,
+  Heart,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  Plus,
+  Minus,
+  ArrowUp
 } from 'lucide-react';
 
 import { Link } from '@/lib/router';
@@ -29,7 +29,7 @@ import { products, categories } from '@/data/products';
 const Hero = () => (
   <section className="min-h-[calc(100vh-110px)] flex items-center px-[5%] pt-[30px]">
     <div className="grid lg:grid-cols-2 items-center gap-[50px] w-full">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -41,7 +41,7 @@ const Hero = () => (
         <button className="bg-primary text-white px-8 h-12 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all">Explore Collection</button>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
@@ -61,11 +61,11 @@ const Hero = () => (
 
 const USP = () => (
   <section className="px-[5%] pb-[90px] mt-20">
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="bg-surface border border-border shadow-2xl grid sm:grid-cols-2 lg:grid-cols-4 gap-[18px] p-[22px] rounded-lg"
+      className="bg-surface border border-border md:shadow-2xl grid sm:grid-cols-2 lg:grid-cols-4 gap-[18px] p-[22px] rounded-lg"
     >
       {[
         { icon: Truck, title: 'Fast Delivery', sub: 'Doorstep shipping worldwide' },
@@ -83,7 +83,7 @@ const USP = () => (
       ))}
     </motion.div>
 
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
@@ -99,13 +99,13 @@ const USP = () => (
 );
 
 const Services = () => (
-  <section className="py-[120px] px-[5%]">
+  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">What we offer</p>
-        <h2 className="text-[38px] font-bold leading-tight tracking-tight">Our Bespoke Services</h2>
+        <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Our Bespoke Services</h2>
       </motion.div>
-      <Link href="/services" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center">View All Services</Link>
+      <Link href="/services" className="md:px-6 px-2 h-11 rounded-full border border-secondary/45 text-foreground md:text-[14px] text-[12px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:block hidden">View All Services</Link>
     </div>
 
     <div className="grid md:grid-cols-3 gap-7">
@@ -114,7 +114,7 @@ const Services = () => (
         { icon: Hammer, title: 'Custom Crafting', sub: 'Each piece is tailored to your specific measurements and material preferences by master artisans.' },
         { icon: Package, title: 'White-Glove Setup', sub: 'Room placement + assembly service so your furniture arrives ready to live beautifully.' }
       ].map((item, idx) => (
-        <motion.div 
+        <motion.div
           key={idx}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -132,15 +132,15 @@ const Services = () => (
 );
 
 const Collections = () => (
-  <section className="py-[120px] px-[5%]" id="living">
+  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] " id="living">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
-      <h2 className="text-[38px] font-bold leading-tight tracking-tight">Our Collections</h2>
+      <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Our Collections</h2>
       <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center">View All</Link>
     </div>
 
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {categories.slice(0, 4).map((item, idx) => (
-        <Link 
+        <Link
           key={item.id}
           href={`/category/${item.id}`}
           className="relative h-[450px] overflow-hidden rounded-md border border-border group cursor-pointer block"
@@ -165,18 +165,18 @@ const Collections = () => (
 );
 
 const ShopByRoom = () => (
-  <section className="py-[120px] px-[5%] pt-0" id="shop-room">
+  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  pt-0" id="shop-room">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Shop by Room</p>
-        <h2 className="text-[38px] font-bold leading-tight tracking-tight">Find Your Perfect Space</h2>
+        <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Find Your Perfect Space</h2>
       </div>
-      <Link href="/shop" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center">Browse Rooms</Link>
+      <Link href="/shop" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:block hidden">Browse Rooms</Link>
     </div>
 
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {categories.map((item, idx) => (
-        <Link 
+        <Link
           key={item.id}
           href={`/category/${item.id}`}
           className="bg-surface border border-border rounded-lg overflow-hidden cursor-pointer shadow-lg hover:-translate-y-2 hover:shadow-2xl hover:border-secondary/55 transition-all duration-180 group block"
@@ -205,16 +205,16 @@ const ShopByRoom = () => (
 );
 
 const FeaturedBanner = () => (
-  <section className="bg-primary text-white grid lg:grid-cols-2 items-center overflow-hidden border-y border-white/15" id="bedroom">
-    <motion.div 
+  <section className="bg-primary text-white grid lg:grid-cols-2 items-center overflow-hidden " id="bedroom">
+    <motion.div
       initial={{ opacity: 0, x: -30 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
-      className="h-full"
+      className="md:h-[580px] h-[380px]"
     >
       <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&q=80&w=1200" alt="Bed" className="w-full h-full object-cover saturate-[1.02] contrast-[1.02]" />
     </motion.div>
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, x: 30 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
@@ -231,7 +231,7 @@ const FeaturedBanner = () => (
 const ProductSlider = () => {
   const [activePage, setActivePage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
+
   const featuredProducts = products.slice(0, 5);
 
   const handleScroll = () => {
@@ -249,17 +249,17 @@ const ProductSlider = () => {
   };
 
   return (
-    <section className="py-[120px] px-[5%]">
+    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Best Sellers</p>
-          <h2 className="text-[38px] font-bold leading-tight tracking-tight">New Essentials</h2>
+          <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">New Essentials</h2>
         </div>
-        <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center">View All Products</Link>
+        <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:block hidden">View All Products</Link>
       </div>
 
       <div className="relative">
-        <div 
+        <div
           ref={scrollRef}
           onScroll={handleScroll}
           className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1"
@@ -304,32 +304,32 @@ const ProductSlider = () => {
 };
 
 const Craft = () => (
-  <section className="py-[120px] px-[5%] bg-surface/50 border-y border-border">
+  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  bg-surface/50 border-y border-border">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Craft & Quality</p>
-        <h2 className="text-[38px] font-bold leading-tight tracking-tight">Built for Everyday Living</h2>
+        <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Built for Everyday Living</h2>
       </div>
-      <Link href="/about" className="px-[18px] h-11 rounded-full bg-secondary/18 text-dark border border-secondary/35 text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/26 hover:border-secondary/55 transition-all flex items-center">Our Story</Link>
+      <Link href="/about" className="px-[18px] h-11 rounded-full bg-secondary/18 text-dark border border-secondary/35 text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/26 hover:border-secondary/55 transition-all flex items-center md:block hidden">Our Story</Link>
     </div>
 
     <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 items-center">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="h-[520px] rounded-lg overflow-hidden bg-muted/10 border border-border shadow-2xl"
+        className="h-[520px] rounded-lg overflow-hidden bg-muted/10 border border-border "
       >
         <img src="https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&q=80&w=1600" alt="Materials" className="w-full h-full object-cover" />
       </motion.div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: 20 }}
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         className="bg-background/70 border border-border p-[34px] rounded-lg shadow-sm"
       >
-        <h3 className="font-heading text-[42px] font-extrabold leading-none">Premium wood, soft textiles, timeless forms.</h3>
+        <h3 className="font-heading md:text-[42px] text-[28px] font-extrabold leading-none">Premium wood, soft textiles, timeless forms.</h3>
         <p className="text-muted font-semibold mt-2.5">Every piece is engineered for longevity—chosen materials, durable joinery, and finishes that age beautifully.</p>
 
         <div className="grid gap-3 mt-[18px]">
@@ -357,7 +357,7 @@ const Craft = () => (
 const Testimonials = () => {
   const [activePage, setActivePage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
+
   const items = [
     { text: '"The Aura chair isn\'t just furniture; it\'s a piece of art that redefined my entire living room aesthetic."', author: '— Sarah Jenkins, Interior Architect' },
     { text: '"Exquisite attention to detail. The oak table we ordered is the centerpiece of every dinner party we host."', author: '— Marcus Thorne, Homeowner' },
@@ -380,16 +380,16 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-[120px] px-[5%] bg-surface/55">
+    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  bg-surface/55">
       <div className="flex justify-center text-center mb-[60px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Client Stories</p>
-          <h2 className="text-[38px] font-bold leading-tight tracking-tight">What People Say</h2>
+          <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">What People Say</h2>
         </div>
       </div>
 
       <div className="relative">
-        <div 
+        <div
           ref={scrollRef}
           onScroll={handleScroll}
           className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1"
@@ -423,7 +423,7 @@ const Testimonials = () => {
 const Blog = () => {
   const [activePage, setActivePage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
-  
+
   const posts = [
     { title: 'The Rise of Soft Minimalism', tag: 'Design Trends', img: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&q=80&w=1200' },
     { title: 'Working with Sustainable Oak', tag: 'Craftsmanship', img: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&q=80&w=1200' },
@@ -446,14 +446,14 @@ const Blog = () => {
   };
 
   return (
-    <section className="py-[120px] px-[5%]">
+    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
-        <h2 className="text-[38px] font-bold leading-tight tracking-tight">The Journal</h2>
-        <Link href="/blog" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center">View All Posts</Link>
+        <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">The Journal</h2>
+        <Link href="/blog" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:block hidden">View All Posts</Link>
       </div>
 
       <div className="relative">
-        <div 
+        <div
           ref={scrollRef}
           onScroll={handleScroll}
           className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1"
@@ -490,7 +490,7 @@ const Blog = () => {
 
 const FAQ = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  
+
   const faqs = [
     { q: 'What materials do you use?', a: 'We use sustainably sourced European Oak, Italian Velvet, and high-grade Belgian linens. All materials are selected for longevity and ethical impact.' },
     { q: 'How long does shipping take?', a: 'Standard pieces ship within 2-3 weeks. Custom bespoke orders typically take 8-10 weeks to allow for artisanal crafting and quality control.' },
@@ -498,9 +498,9 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="py-[120px] px-[5%]">
+    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex flex-col items-center text-center mb-[60px]">
-        <h2 className="text-[38px] font-bold leading-tight tracking-tight mb-4">Frequently Asked Questions</h2>
+        <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight mb-4">Frequently Asked Questions</h2>
         <Link href="/faq" className="text-secondary font-black tracking-[2px] uppercase text-xs border-b border-secondary pb-1">View All FAQs</Link>
       </div>
 
@@ -511,7 +511,7 @@ const FAQ = () => {
               <h4 className="font-heading text-[24px] font-bold">{faq.q}</h4>
               {activeIndex === idx ? <Minus className="text-secondary" size={22} /> : <Plus className="text-secondary" size={22} />}
             </div>
-            <motion.div 
+            <motion.div
               initial={false}
               animate={{ height: activeIndex === idx ? 'auto' : 0, marginTop: activeIndex === idx ? 12 : 0 }}
               className="overflow-hidden text-muted text-[15px] font-semibold"
@@ -536,111 +536,111 @@ const Newsletter = () => {
   };
 
   return (
-  <section className="relative overflow-hidden border-y border-white/10 bg-[#0E6E35] px-[5%] py-[90px] text-white lg:py-[110px]">
-  {/* background accents */}
-  <div className="pointer-events-none absolute inset-0">
-    <div className="absolute left-[-120px] top-[-120px] h-[280px] w-[280px] rounded-full bg-white/5 blur-3xl" />
-    <div className="absolute bottom-[-140px] right-[-80px] h-[320px] w-[320px] rounded-full bg-[#B8D35A]/10 blur-3xl" />
-  </div>
-
-  <div className="relative mx-auto max-w-[1400px]">
-    <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
-      {/* left content */}
-      <div className="max-w-[760px]">
-        <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2">
-          <span className="text-[12px] font-extrabold uppercase tracking-[3px] text-[#B8D35A]">
-            Members Only
-          </span>
-        </div>
-
-        <h3 className="max-w-[760px] font-heading text-[42px] font-bold leading-[0.95] tracking-[-0.03em] text-white sm:text-[56px] lg:text-[74px]">
-          Get early access to
-          <br className="hidden sm:block" />
-          new drops.
-        </h3>
-
-        <p className="mt-6 max-w-[620px] text-[18px] font-medium leading-8 text-white/80 sm:text-[20px]">
-          Weekly inspiration, exclusive offers, and interior tips—straight to
-          your inbox.
-        </p>
-
-        <div className="mt-10 hidden items-center gap-8 text-white/65 lg:flex">
-          <div className="flex items-center gap-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
-            <span className="text-[14px] font-semibold">Exclusive drops</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
-            <span className="text-[14px] font-semibold">Interior tips</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
-            <span className="text-[14px] font-semibold">Members-only offers</span>
-          </div>
-        </div>
+    <section className="relative overflow-hidden border-y border-white/10 bg-[#0E6E35] px-[5%] py-[90px] text-white lg:py-[110px]">
+      {/* background accents */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute left-[-120px] top-[-120px] h-[280px] w-[280px] rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute bottom-[-140px] right-[-80px] h-[320px] w-[320px] rounded-full bg-[#B8D35A]/10 blur-3xl" />
       </div>
 
-      {/* right form card */}
-      <div className="lg:justify-self-end">
-        <div className="w-full max-w-[540px] rounded-[12px] border border-white/12 bg-white/10 p-4  sm:p-5">
-          <div className="mb-4">
-            <p className="text-[18px] font-semibold text-white/85">
-              Join the list
-            </p>
-            <p className="mt-1 text-[13px] leading-6 text-white/80">
-              Be the first to hear about launches, curated inspiration, and
-              private offers.
-            </p>
-          </div>
-
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col gap-3 sm:flex-row sm:items-center"
-          >
-            <div className="flex-1">
-              <input
-                className="py-4 w-full rounded-full border border-white/15 bg-white px-5 text-[16px] font-medium text-black outline-none transition placeholder:text-black/45 focus:border-[#B8D35A] focus:ring-2 focus:ring-[#B8D35A]/30"
-                type="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+      <div className="relative mx-auto max-w-[1400px]">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+          {/* left content */}
+          <div className="max-w-[760px]">
+            <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2">
+              <span className="text-[12px] font-extrabold uppercase tracking-[3px] text-[#B8D35A]">
+                Members Only
+              </span>
             </div>
 
-            <button
-              className="inline-flex py-4 items-center justify-center rounded-full bg-[#B8D35A] px-7 text-[14px] font-extrabold uppercase tracking-[0.14em] text-[#14351F] transition hover:translate-y-[-1px] hover:bg-[#c7df72]"
-              type="submit"
-            >
-              Subscribe
-            </button>
-          </form>
+            <h3 className="max-w-[760px] font-heading text-[42px] font-bold leading-[0.95] tracking-[-0.03em] text-white sm:text-[56px] lg:text-[74px]">
+              Get early access to
+              <br className="hidden sm:block" />
+              new drops.
+            </h3>
 
-          {msg && (
-            <p className="mt-3 text-[13px] font-medium text-white/75">{msg}</p>
-          )}
+            <p className="mt-6 max-w-[620px] text-[18px] font-medium leading-8 text-white/80 sm:text-[20px]">
+              Weekly inspiration, exclusive offers, and interior tips—straight to
+              your inbox.
+            </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] font-medium text-white/55">
-            <span>No spam</span>
-            <span className="hidden h-1 w-1 rounded-full bg-white/25 sm:block" />
-            <span>Unsubscribe anytime</span>
-            <span className="hidden h-1 w-1 rounded-full bg-white/25 sm:block" />
-            <span>Weekly updates</span>
+            <div className="mt-10 hidden items-center gap-8 text-white/65 lg:flex">
+              <div className="flex items-center gap-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
+                <span className="text-[14px] font-semibold">Exclusive drops</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
+                <span className="text-[14px] font-semibold">Interior tips</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
+                <span className="text-[14px] font-semibold">Members-only offers</span>
+              </div>
+            </div>
+          </div>
+
+          {/* right form card */}
+          <div className="lg:justify-self-end">
+            <div className="w-full max-w-[540px] rounded-[12px] border border-white/12 bg-white/10 p-4  sm:p-5">
+              <div className="mb-4">
+                <p className="text-[18px] font-semibold text-white/85">
+                  Join the list
+                </p>
+                <p className="mt-1 text-[13px] leading-6 text-white/80">
+                  Be the first to hear about launches, curated inspiration, and
+                  private offers.
+                </p>
+              </div>
+
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-3 sm:flex-row sm:items-center"
+              >
+                <div className="flex-1">
+                  <input
+                    className="py-4 w-full rounded-full border border-white/15 bg-white px-5 text-[16px] font-medium text-black outline-none transition placeholder:text-black/45 focus:border-[#B8D35A] focus:ring-2 focus:ring-[#B8D35A]/30"
+                    type="email"
+                    placeholder="Enter your email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+
+                <button
+                  className="inline-flex py-4 items-center justify-center rounded-full bg-[#B8D35A] px-7 text-[14px] font-extrabold uppercase tracking-[0.14em] text-[#14351F] transition hover:translate-y-[-1px] hover:bg-[#c7df72]"
+                  type="submit"
+                >
+                  Subscribe
+                </button>
+              </form>
+
+              {msg && (
+                <p className="mt-3 text-[13px] font-medium text-white/75">{msg}</p>
+              )}
+
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] font-medium text-white/55">
+                <span>No spam</span>
+                <span className="hidden h-1 w-1 rounded-full bg-white/25 sm:block" />
+                <span>Unsubscribe anytime</span>
+                <span className="hidden h-1 w-1 rounded-full bg-white/25 sm:block" />
+                <span>Weekly updates</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </section>
   );
 };
 
 const InstagramGallery = () => (
-  <section className="py-[120px] px-[5%]">
+  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Community</p>
-        <h2 className="text-[38px] font-bold leading-tight tracking-tight">Styled by You</h2>
+        <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Styled by You</h2>
       </div>
       <button className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all">Follow Instagram</button>
     </div>
@@ -654,7 +654,7 @@ const InstagramGallery = () => (
         'https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?auto=format&fit=crop&q=80&w=900',
         'https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&q=80&w=900'
       ].map((img, idx) => (
-        <motion.div 
+        <motion.div
           key={idx}
           whileHover={{ scale: 1.02 }}
           className="h-[180px] rounded-lg overflow-hidden bg-muted/10 border border-border relative group cursor-pointer"
@@ -683,9 +683,9 @@ const HomePage = () => {
       <FAQ />
       <Newsletter />
       <InstagramGallery />
-      
+
       <section className="bg-foreground/90 text-surface text-center py-[110px] px-[5%] border-t border-border">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
