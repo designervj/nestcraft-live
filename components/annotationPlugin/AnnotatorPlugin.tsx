@@ -14,6 +14,7 @@ import GetAllCommments from './GetAllCommments';
 import { usePathname } from 'next/navigation';
 import { RootState } from '@/lib/store/store';
 import { useAppDispatch } from '@/lib/store/hooks';
+import { setPageComments } from '@/lib/store/comments/commentSlice';
 
 export const AnnotatorPlugin: React.FC = () => {
   const {
@@ -49,10 +50,13 @@ export const AnnotatorPlugin: React.FC = () => {
 
   // update the annotation
   useEffect(() => {
+    if(slug &&allComments){
     const filterComments = allComments.filter((comment:Annotation) => comment.slug === slug)
     if (filterComments.length > 0) {
+      dispatch(setPageComments(filterComments))
       setAnnotations(filterComments)
     }
+  }
   }, [slug, allComments])
   // Apply calibration mode styles
   useEffect(() => {
@@ -131,7 +135,7 @@ export const AnnotatorPlugin: React.FC = () => {
       status: 'open',
       screenSize: getScreenSize(window.innerWidth),
       pageId: currentPages._id,
-      slug: currentPages.slug
+      slug: slug
     }
     addAnnotation(data);
     setDraft(null);

@@ -7,9 +7,11 @@ import adminVariantsReducer from './features/adminVariantsSlice';
 import adminOrdersReducer from './features/adminOrdersSlice';
 import pagesReducer from './pages/pagesSlice';
 import commentsReducer from './comments/commentSlice';
+import authReducer from './auth/authSlice';
 export const makeStore = () => {
   return configureStore({
     reducer: {
+      auth: authReducer,
       pages: pagesReducer,
       comments: commentsReducer,
       cart: cartReducer,

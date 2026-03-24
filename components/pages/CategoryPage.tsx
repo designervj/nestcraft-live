@@ -14,12 +14,16 @@ import {
 import { products, categories } from '../../data/products';
 import { useAppDispatch } from '../../lib/store/hooks';
 import { addToCart } from '../../lib/store/features/cartSlice';
+import { RootState } from '@/lib/store/store';
+import { useSelector } from 'react-redux';
+import { AnnotatorPlugin } from '../annotationPlugin/AnnotatorPlugin';
+import GetAllPages from './GetAllPages';
 
 const CategoryPage = () => {
   const { id } = useParams<{ id: string }>();
   const [searchQuery, setSearchQuery] = useState('');
   const dispatch = useAppDispatch();
-
+  const {nestCraftUser}= useSelector((state:RootState)=>state.auth)
   const currentCategory = useMemo(() => {
     if (!id) return null;
     return categories.find(c => c.id === id);
@@ -43,6 +47,11 @@ const CategoryPage = () => {
   }, [id, searchQuery, currentCategory]);
 
   return (
+      <>
+        {/* commentsS Plugin */}
+   {nestCraftUser?.role=="admin" && <AnnotatorPlugin />}
+   {/* get all page from the database */}
+   <GetAllPages/>
     <div className="mx-auto px-[5%] pb-20 pt-[50px]">
       {/* Breadcrumbs */}
       <div className="crumbs flex items-center gap-2">
@@ -231,6 +240,7 @@ const CategoryPage = () => {
         </div>
       </section>
     </div>
+     </>
   );
 };
 

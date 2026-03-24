@@ -4,40 +4,44 @@ import { loginThunk } from './authThunks';
 interface User {
   userName?: string;
   password?: string;
+  role?: string;
+  email?: string;
+  id?: string;
+  _id?: string;
 }
 
 interface AuthState {
-  user: User | null;
-  token: string | null;
+  nestCraftUser: User | null;
+  nestCraftToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
 }
 
-const loadState = () => {
+const loadState = (): AuthState => {
   try {
-    const serializedUser = localStorage.getItem('user');
-    const serializedToken = localStorage.getItem('token');
+    const serializedUser = localStorage.getItem('nestCraftUser');
+    const serializedToken = localStorage.getItem('nestCraftToken');
     if (serializedUser === null) {
       return {
-        user: null,
-        token: null,
+        nestCraftUser: null,
+        nestCraftToken: null,
         isAuthenticated: false,
         isLoading: false,
         error: null,
       };
     }
     return {
-      user: JSON.parse(serializedUser),
-      token: serializedToken,
+      nestCraftUser: JSON.parse(serializedUser),
+      nestCraftToken: serializedToken,
       isAuthenticated: true,
       isLoading: false,
       error: null,
     };
   } catch (err) {
     return {
-      user: null,
-      token: null,
+      nestCraftUser: null,
+      nestCraftToken: null,
       isAuthenticated: false,
       isLoading: false,
       error: null,
@@ -46,8 +50,8 @@ const loadState = () => {
 };
 
 const initialState: AuthState = typeof window !== 'undefined' ? loadState() : {
-  user: null,
-  token: null,
+  nestCraftUser: null,
+  nestCraftToken: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
@@ -61,22 +65,22 @@ const authSlice = createSlice({
       state,
       action: PayloadAction<{ user: User; token: string }>
     ) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
+      state.nestCraftUser = action.payload.user;
+      state.nestCraftToken = action.payload.token;
       state.isAuthenticated = true;
       state.error = null;
       if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
-        localStorage.setItem('token', action.payload.token);
+        localStorage.setItem('nestCraftUser', JSON.stringify(action.payload.user));
+        localStorage.setItem('nestCraftToken', action.payload.token);
       }
     },
     logout: (state) => {
-      state.user = null;
-      state.token = null;
+      state.nestCraftUser = null;
+      state.nestCraftToken = null;
       state.isAuthenticated = false;
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
+        localStorage.removeItem('nestCraftUser');
+        localStorage.removeItem('nestCraftToken');
       }
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
@@ -95,12 +99,15 @@ const authSlice = createSlice({
     })
     .addCase(loginThunk.fulfilled, (state, action: any) => {
    
-      state.user = action.payload.user;
-      state.isAuthenticated = true;
+      state.nestCraftUser = action.payload.user;
+        if(action.payload.user?.role=="admin"){
+             state.isAuthenticated = true;
+        }
+  
       state.isLoading = false;
       state.error = null;
       if (typeof window !== 'undefined') {
-        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        localStorage.setItem('nestCraftUser', JSON.stringify(action.payload.user));
         // Note: token is not currently in the loginThunk payload, 
         // but if it were, we would set it here as well.
       }

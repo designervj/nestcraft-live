@@ -8,7 +8,7 @@ export const loginThunk = createAsyncThunk(
   async (credentials: any, { dispatch }) => {
     console.log(credentials);
     try {
-      const response: any = await fetch('/api/auth', {
+      const response: any = await fetch('/api/admin/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

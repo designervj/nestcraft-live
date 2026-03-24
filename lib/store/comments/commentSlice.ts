@@ -31,6 +31,9 @@ const commentSlice = createSlice({
     setPageComments: (state, action: PayloadAction<Annotation[]>) => {
       state.pageComments = action.payload;
     },
+    resetPageComments: (state) => {
+        state.pageComments = [];
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -105,5 +108,5 @@ const commentSlice = createSlice({
   },
 });
 
-export const { setAllComments, setPageComments, setLoading, setError } = commentSlice.actions;
+export const { setAllComments, setPageComments, setLoading, setError ,resetPageComments} = commentSlice.actions;
 export default commentSlice.reducer;

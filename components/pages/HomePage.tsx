@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   ArrowRight,
@@ -26,6 +26,9 @@ import { products, categories } from '@/data/products';
 import MainHeroSlider from './MainHeroSlider';
 import { AnnotatorPlugin } from '../annotationPlugin/AnnotatorPlugin';
 import GetAllPages from './GetAllPages';
+import { RootState } from '@/lib/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPageComments } from '@/lib/store/comments/commentSlice';
 
 // --- Homepage Specific Components ---
 
@@ -686,10 +689,17 @@ const InstagramGallery = () => (
 );
 
 const HomePage = () => {
+
+  const {nestCraftUser}= useSelector((state:RootState)=>state.auth)
+     const dispatch= useDispatch()
+    //update the page
+    useEffect(()=>{
+      dispatch(resetPageComments())
+    },[])
   return (
     <>
     {/* commentsS Plugin */}
-    <AnnotatorPlugin />
+   {nestCraftUser?.role=="admin" && <AnnotatorPlugin />}
 
     {/* get all page from the database */}
     <GetAllPages/>
@@ -729,3 +739,5 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
