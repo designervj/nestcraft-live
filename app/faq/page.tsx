@@ -5,3 +5,4 @@ export default async function Page() {
   const pageData = await getPageData('faq');
   return <Component initialData={pageData} />;
 }
+
