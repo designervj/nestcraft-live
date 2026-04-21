@@ -937,6 +937,7 @@ const FAQ = ({ section }: { section: any }) => {
             <div className="flex justify-between items-center gap-3.5">
               <h4 className="font-heading text-[20px] font-bold">{faq.title}</h4>
               {activeIndex === idx ? (
+                
                 <Minus className="text-secondary" size={22} />
               ) : (
                 <Plus className="text-secondary" size={22} />
