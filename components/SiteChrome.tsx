@@ -974,7 +974,7 @@ const Header = ({
     <>
       <header className="w-full bg-background flex flex-col z-[1100] relative">
         {/* TIER 1: Top Bar */}
-        <div className="hidden lg:flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-2 bg-surface/40 border-b border-border text-[12px] text-muted">
+        {/* <div className="hidden lg:flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-2 bg-surface/40 border-b border-border text-[12px] text-muted">
           <div className="flex items-center gap-6 font-medium">
             <Link
               href="/furniture"
@@ -996,7 +996,7 @@ const Header = ({
             </Link>
           </div>
 
-          {/* UPDATED: Top Bar Spacing (Tighter gaps as requested) */}
+        
           <div className="flex items-center gap-3 sm:gap-4 font-medium">
             <a
               href="tel:+91 9810159604"
@@ -1034,9 +1034,9 @@ const Header = ({
               <User size={14} /> Admin
             </Link>
           </div>
-        </div>
+        </div> */}
 
-        {/* TIER 2: Middle Bar (Logo, Search, Icons) */}
+        
         <div className="flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-4 bg-background">
           <button
             onClick={() => setIsMobileMenuOpen(true)}
@@ -1047,7 +1047,7 @@ const Header = ({
 
           <div className="shrink-0 flex-1 lg:flex-none flex justify-center lg:justify-start">
             <Link href="/" className="block py-1">
-              {/* UPDATED: Increased Logo Size */}
+          
               <img
                 src="/assets/Image/nestcraft-logo.svg"
                 alt="NestCraft"
@@ -1069,7 +1069,7 @@ const Header = ({
           </div>
 
           <div className="flex items-center gap-4 sm:gap-8 shrink-0">
-            <button
+            {/* <button
               onClick={toggleTheme}
               className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
             >
@@ -1077,16 +1077,16 @@ const Header = ({
               <span className="text-[11px] font-medium hidden lg:block">
                 Theme
               </span>
-            </button>
-            <Link
+            </button> */}
+            {/* <Link
               href="/stores"
               className="hidden lg:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
             >
               <Store size={22} />
               <span className="text-[11px] font-medium">Stores</span>
-            </Link>
+            </Link> */}
             <Link
-              href="/profile"
+              href="/admin"
               className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
             >
               <User size={22} />

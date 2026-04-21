@@ -120,7 +120,9 @@ const ContactPage = () => {
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[2px] text-muted">Email</span>
                   </div>
-                  <p className="text-2xl font-bold tracking-tight">nestcraftmail.com</p>
+                  {/* <p className="text-2xl font-bold tracking-tight">nestcraftmail@gmail.com</p> */}
+                  <a href="mailto:nestcraftmail@gmail.com" className="text-2xl font-bold  tracking-tight "> nestcraftmail@gmail.com</a>
+
                   <div className="w-0 group-hover:w-full h-px bg-secondary transition-all duration-500 mt-2" />
                 </div>
 
@@ -131,7 +133,8 @@ const ContactPage = () => {
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[2px] text-muted">Phone</span>
                   </div>
-                  <p className="text-2xl font-bold tracking-tight">+91 9810159604</p>
+                  {/* <p className="text-2xl font-bold tracking-tight">+91 9810159604</p> */}
+                  <a href="tel:+919810159604" className="text-2xl font-bold tracking-tight"> +91 9810159604</a>
                   <div className="w-0 group-hover:w-full h-px bg-secondary transition-all duration-500 mt-2" />
                 </div>
 
@@ -267,12 +270,12 @@ const ContactPage = () => {
                   <button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="group relative w-full bg-primary text-white h-20 rounded-full overflow-hidden transition-all disabled:opacity-70"
+                    className="group relative w-full bg-primary text-medium text-white h-15 rounded-full overflow-hidden transition-all disabled:opacity-70"
                   >
                     <div className="absolute inset-0 bg-secondary translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-                    <span className="relative z-10 flex items-center justify-center gap-4 text-[15px] font-black uppercase tracking-[3px]">
+                    <span className="relative z-10 flex items-center justify-center gap-4 text-[14px]  font-black uppercase tracking-[3px] ">
                       {isSubmitting ? (
-                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin text-medium" />
                       ) : (
                         <>
                           Send Message <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
@@ -290,11 +293,12 @@ const ContactPage = () => {
       {/* Map Section - Minimalist */}
       <section className="px-[5%] max-w-7xl mx-auto pb-32">
         <div className="relative h-[600px] rounded-[60px] overflow-hidden border border-border shadow-2xl group">
-          <img 
+          {/* <img 
             src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&q=80&w=2000" 
             alt="Map" 
             className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-opacity duration-1000"
-          />
+          /> */}
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3558.1622708907225!2d75.82064262512074!3d26.89834471070848!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396db74615ffdb4d%3A0x21afdb4e447341f4!2sNestCraft%20Living!5e0!3m2!1sen!2sin!4v1776761345663!5m2!1sen!2sin" width="100% " height="100%"  loading="lazy" ></iframe>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
           
           <div className="absolute bottom-12 left-12 right-12 flex flex-col md:flex-row justify-between items-end gap-8">
