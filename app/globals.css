@@ -1,8 +1,10 @@
-@import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&display=swap');
+/* @tailwind base */
+/* @tailwind components */
+/* @tailwind utilities */
 
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -61,8 +63,8 @@
 }
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-heading: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-cormorant), Georgia, "Times New Roman", serif;
 
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
@@ -90,17 +92,20 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--border);
+    outline-color: color-mix(in srgb, var(--ring) 50%, transparent);
   }
   body {
-    @apply font-sans bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
     scroll-behavior: smooth;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   }
   html {
-    @apply font-sans;
+    font-family: var(--font-sans);
   }
 }
 
@@ -126,21 +131,45 @@
 /* Custom Component Styles from provided HTML */
 @layer components {
   .crumbs {
-    @apply my-5 flex gap-2.5 flex-wrap items-center text-[11px] font-black uppercase tracking-[2px] text-foreground/70;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    gap: 0.625rem;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: color-mix(in srgb, var(--foreground) 70%, transparent);
   }
-  .crumbs span { @apply opacity-55; }
-  .crumbs a:hover { @apply text-secondary; }
+  .crumbs span { opacity: 0.55; }
+  .crumbs a:hover { color: var(--secondary); }
 
   .pagehead {
-    @apply relative border border-border rounded-[20px] overflow-hidden shadow-sm bg-surface min-h-[190px];
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    background-color: var(--surface);
+    min-height: 190px;
   }
   .pagehead::before {
     content: "";
-    @apply absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center scale-[1.02] saturate-[1.05] contrast-[1.02];
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=2000');
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.02);
+    filter: saturate(1.05) contrast(1.02);
   }
   .pagehead::after {
     content: "";
-    @apply absolute inset-0 pointer-events-none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
     background: linear-gradient(90deg, rgba(247, 250, 245, 0.96) 0%, rgba(247, 250, 245, 0.92) 40%, rgba(247, 250, 245, 0.55) 72%, rgba(247, 250, 245, 0.25) 100%);
   }
   [data-theme="dark"] .pagehead::after {
@@ -148,21 +177,47 @@
   }
 
   .pagehead-inner {
-    @apply relative z-10 flex flex-col lg:flex-row items-start lg:items-end justify-between gap-4 p-6 min-h-[190px];
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem;
+    min-height: 190px;
+  }
+  @media (min-width: 1024px) {
+    .pagehead-inner {
+      flex-direction: row;
+      align-items: flex-end;
+    }
   }
   .pagehead-content {
-    @apply max-w-[780px] bg-white/78 border border-white/65 rounded-2xl p-[18px_18px_16px] backdrop-blur-md shadow-lg;
+    max-width: 780px;
+    background-color: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 1rem;
+    padding: 18px 18px 16px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-md);
   }
   [data-theme="dark"] .pagehead-content {
-    @apply bg-surface/72 border-secondary/18;
+    background-color: color-mix(in srgb, var(--surface) 72%, transparent);
+    border-color: color-mix(in srgb, var(--secondary) 18%, transparent);
   }
 
   .huge-watermark {
-    @apply font-heading text-foreground/5 -mt-5 pointer-events-none select-none font-medium text-center overflow-hidden;
+    font-family: var(--font-heading);
+    color: color-mix(in srgb, var(--foreground) 5%, transparent);
+    margin-top: -1.25rem;
+    pointer-events: none;
+    user-select: none;
+    font-weight: 500;
+    text-align: center;
+    overflow: hidden;
     font-size: clamp(72px, 18vw, 235px);
     letter-spacing: -0.0em;
     line-height: 0.85;
-
   }
 
   @media (max-width: 1024px) {
