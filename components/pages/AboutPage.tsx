@@ -13,18 +13,33 @@ import DesignPhilosophy from "../aboutpage/designPhilosophy/DesignPhilosophy";
 import WhyChooseUs from "../aboutpage/whyChooseUs/WhyChooseUs";
 import StatsSection from "../aboutpage/statsSection/StatsSection";
 import { resetPageComments } from "@/lib/store/comments/commentSlice";
+import { usePathname } from "next/navigation";
+import { Page } from "@/lib/store/pages/pageType";
+import { setCurrentPages } from "@/lib/store/pages/pagesSlice";
 
 
 
 
 
 const AboutPage = () => {
-  const { nestCraftUser } = useSelector((state: RootState) => state.auth)
+  const { user : nestCraftUser} = useSelector((state: RootState) => state.auth)
+  const {allPages,isAllPageFetched}= useSelector((state: RootState) => state.pages)
+  const pathname= usePathname()
+  const slug=pathname.split("/")?.[2]
+  console.log("slug--->",slug)
   const dispatch = useDispatch()
   //update the page
-  // useEffect(()=>{
-  //   dispatch(resetPageComments())
-  // },[])
+ useEffect(()=>{
+  if(allPages && 
+    allPages?.length>0 && 
+    slug){
+   const currentPage= allPages.find((item:Page)=>item.slug===slug)
+     if(currentPage){
+      dispatch(setCurrentPages(currentPage))
+     }
+  }
+ },[allPages,slug])
+ 
   return (
     <>
       {/* commentsS Plugin */}
