@@ -1,15 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 const tenantHeader = process.env.NEXT_PUBLIC_TENANT_ID;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/commerce/cart`, {
+      const response = await fetch(`/api/commerce/cart`, {
         headers: {
           "x-tenant-db": tenantHeader || "",
+          "Content-Type": "application/json",
         },
         credentials: "include",
       });
