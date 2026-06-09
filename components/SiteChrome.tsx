@@ -24,6 +24,7 @@ import {
   Wrench,
   ShieldCheck,
   ClipboardList,
+  ChevronRight,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
@@ -102,6 +103,7 @@ const Header = ({
   const activeTab = displayMenus.find((tab) => tab.key === activeMegaTab);
 
   const [hasColumns, setHasColumns] = useState<boolean>(false);
+  const [expandedDrawerTab, setExpandedDrawerTab] = useState<string | null>(null);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -127,9 +129,27 @@ const Header = ({
     router.push(`/${href}`);
     // setActiveMegaTab(null);
   };
+  const isHome = pathname === '/' || pathname === '/en' || pathname === '/hi';
+  const isTransparent = isHome && !isScrolled && !activeMegaTab && !isMobileMenuOpen;
+
+  const textColor = isTransparent ? 'text-white' : 'text-foreground';
+  const hoverColor = isTransparent ? 'hover:text-white/80' : 'hover:text-secondary';
+
+  const logoClass = isTransparent ? 'h-10 sm:h-14 w-auto object-contain ' : 'h-10 sm:h-14 w-auto object-contain';
+
+  const defaultLogo = "/assets/Image/nestcraft-logo.svg";
+  const whiteLogo = "/assets/Image/nestcraft-logo-white.svg";
+
+  let currentLogoSrc = normalizeLogoUrl(logoUrl) || defaultLogo;
+  if (isTransparent && currentLogoSrc.includes("nestcraft-logo.svg")) {
+    currentLogoSrc = whiteLogo;
+  }
+
   return (
-    <>
-      <header className="w-full bg-background flex flex-col z-[1100] relative">
+    <div className={`w-full z-[1200] transition-all duration-300 ${
+      isScrolled ? 'fixed top-0 left-0 animate-in slide-in-from-top-2' : (isTransparent ? 'absolute top-0 left-0' : 'relative')
+    }`}>
+      <header className={`w-full flex flex-col relative transition-colors duration-300 ${isTransparent ? 'bg-transparent border-transparent' : 'bg-background border-b border-border'}`}>
         {/* TIER 1: Top Bar */}
         {/* <div className="hidden lg:flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-2 bg-surface/40 border-b border-border text-[12px] text-muted">
           <div className="flex items-center gap-6 font-medium">
@@ -193,283 +213,80 @@ const Header = ({
           </div>
         </div> */}
 
-        <div className="flex items-center justify-between px-4 sm:px-[5%] xl:px-[8%] py-4 bg-background">
-          <button
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden p-2 -ml-2 text-foreground"
-          >
-            <Menu size={24} />
-          </button>
+        <div className={`grid grid-cols-3 items-center px-4 sm:px-[5%] xl:px-[8%] py-4 ${isTransparent ? 'bg-transparent' : 'bg-background'}`}>
+          {/* Left Column: Menu & Search */}
+          <div className="flex items-center gap-6 justify-start">
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
+            >
+              <Menu size={24} strokeWidth={1.5} />
+              <span className="text-[13px] font-medium hidden sm:block">Menu</span>
+            </button>
+            <button
+              onClick={onSearchOpen}
+              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
+            >
+              <Search size={20} strokeWidth={1.5} />
+              <span className="text-[13px] font-normal hidden sm:block">Search</span>
+            </button>
+          </div>
 
-          <div className="shrink-0 flex-1 lg:flex-none flex justify-center lg:justify-start">
+          {/* Center Column: Logo */}
+          <div className="flex justify-center">
             <Link href="/" className="block py-1">
               <img
-                src={normalizeLogoUrl(logoUrl)}
+                src={currentLogoSrc}
                 alt={companyName || "NestCraft"}
-                className="h-14 sm:h-18 w-auto object-contain"
+                className={logoClass}
                 onError={(e) => {
-                  e.currentTarget.src = DEFAULT_LOGO;
+                  e.currentTarget.src = defaultLogo;
                 }}
               />
             </Link>
           </div>
 
-          <div
-            className="hidden lg:flex flex-1 max-w-2xl mx-12 relative group cursor-text"
-            onClick={onSearchOpen}
-          >
-            <div className="w-full flex items-center h-12 rounded-sm border border-border bg-surface px-4 text-muted group-hover:border-secondary transition-colors">
-              <span className="text-[14px]">
-                Search Products, Color & More...
-              </span>
-              <Search size={20} className="absolute right-4 text-muted" />
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 sm:gap-8 shrink-0">
-            {/* <button
-              onClick={toggleTheme}
-              className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
-            >
-              {theme === "dark" ? <Sun size={22} /> : <Moon size={22} />}
-              <span className="text-[11px] font-medium hidden lg:block">
-                Theme
-              </span>
-            </button> */}
-            {/* <Link
-              href="/stores"
-              className="hidden lg:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
-            >
-              <Store size={22} />
-              <span className="text-[11px] font-medium">Stores</span>
-            </Link> */}
+          {/* Right Column: Icons */}
+          <div className="flex items-center gap-6 justify-end">
             <Link
               href="/admin"
-              className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
+              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
             >
-              <User size={22} />
-              <span className="text-[11px] font-medium">Profile</span>
+              <User size={20} strokeWidth={1.5} />
+              <span className="text-[13px] font-normal hidden lg:block">Login</span>
             </Link>
+
             <Link
               href="/wishlist"
-              className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
+              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
             >
-              <Heart size={22} />
-              <span className="text-[11px] font-medium">Wishlist (0)</span>
+              <Heart size={20} strokeWidth={1.5} />
+              <span className="text-[13px] font-normal hidden lg:block">Wishlist</span>
             </Link>
+
             <Link
               href="/cart"
-              className="flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors relative"
+              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
             >
               <div className="relative">
-                <ShoppingCart size={22} />
+                <ShoppingCart size={20} strokeWidth={1.5} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-2 flex h-[16px] w-[16px] items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
+                  <span className="absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-white">
                     {cartCount}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] font-medium hidden lg:block">
-                Cart ({cartCount})
+              <span className="text-[13px] font-normal hidden lg:block">
+                Bag
               </span>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* TIER 3: Category Bar - STICKY logic applied here */}
-      <div
-        className={`hidden lg:block w-full bg-background border-y border-border shadow-sm z-[1150] transition-all duration-300 ${
-          isScrolled ? "fixed top-0 left-0" : "relative"
-        }`}
-      >
-        <div
-          className="mx-auto px-4 sm:px-[5%] xl:px-[8%] flex items-center justify-start gap-8"
-          onMouseLeave={() => {
-            setActiveMegaTab(null);
-            setHasColumns(false);
-          }}
-        >
-          {displayMenus.map((tab) => {
-            const isActive = activeMegaTab === tab.key;
-            const hasColumns = "columns" in tab;
 
-            return (
-              <button
-                key={tab.key}
-                onMouseEnter={() => {
-                  setActiveMegaTab(tab.key);
-                  setHasColumns(hasColumns);
-                }}
-                onClick={() => handleClick(tab)}
-                className={`group relative py-4 text-[14px] font-medium transition-colors`}
-              >
-                <span>{tab.title}</span>
-                <span
-                  className={`absolute bottom-0 left-0 h-[3px] bg-secondary transition-all duration-200 ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
-                />
-              </button>
-            );
-          })}
 
-          {/* Mega Menu Dropdown */}
-          <AnimatePresence>
-            {activeMegaTab && activeTab && hasColumns && (
-              <motion.div
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 5 }}
-                transition={{ duration: 0.15 }}
-                className="absolute left-0 top-[100%] w-full bg-background border-b border-border shadow-2xl"
-                onMouseEnter={() => setActiveMegaTab(activeTab.key)}
-              >
-                <div className="mx-auto px-4 sm:px-[5%] xl:px-[8%] py-8">
-                  {/* UPDATED: Handle Modular Kitchen Special Layout */}
-                  {activeTab.isModular ? (
-                    <div className="flex flex-col lg:flex-row gap-8 xl:gap-16 justify-between">
-                      {/* Left Info Panel */}
-                      <div className="flex-1 max-w-md pt-2">
-                        <h3 className="text-2xl sm:text-3xl text-foreground font-light mb-12 leading-snug">
-                          Transform your home's style with our innovative{" "}
-                          <span className="font-bold">Design</span>
-                        </h3>
-
-                        <div className="grid grid-cols-4 gap-4 text-center">
-                          <div className="flex flex-col items-center">
-                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
-                              <Users strokeWidth={1.5} size={32} />
-                            </div>
-                            <span className="text-[11px] font-medium text-muted px-2">
-                              20,000+ happy customers
-                            </span>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
-                              <Wrench strokeWidth={1.5} size={32} />
-                            </div>
-                            <span className="text-[11px] font-medium text-muted px-2">
-                              Branded Hardware and Materials
-                            </span>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
-                              <ShieldCheck strokeWidth={1.5} size={32} />
-                            </div>
-                            <span className="text-[11px] font-medium text-muted px-2">
-                              Up to 10-years* material warranty
-                            </span>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <div className="h-12 w-12 rounded-full flex items-center justify-center text-secondary mb-3">
-                              <ClipboardList strokeWidth={1.5} size={32} />
-                            </div>
-                            <span className="text-[11px] font-medium text-muted px-2">
-                              Stringent Quality Checks
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Right Promo Images */}
-                      <div className="flex gap-6 flex-1">
-                        <Link
-                          href="/modular-kitchen"
-                          className="group block flex-1"
-                        >
-                          <div className="rounded-lg overflow-hidden bg-surface mb-3 h-[240px]">
-                            <img
-                              src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800"
-                              alt="Modular Kitchen"
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          </div>
-                          <h4 className="text-center font-medium text-foreground text-lg">
-                            Modular Kitchen
-                          </h4>
-                          <p className="text-center text-muted text-sm mt-1">
-                            Starting From ₹1,49,999
-                          </p>
-                        </Link>
-                        <Link
-                          href="/modular-wardrobe"
-                          className="group block flex-1"
-                        >
-                          <div className="rounded-lg overflow-hidden bg-surface mb-3 h-[240px]">
-                            <img
-                              src="https://images.unsplash.com/photo-1595515106969-1ce29566ff1c?auto=format&fit=crop&q=80&w=800"
-                              alt="Modular Wardrobe"
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          </div>
-                          <h4 className="text-center font-medium text-foreground text-lg">
-                            Modular Wardrobe
-                          </h4>
-                          <p className="text-center text-muted text-sm mt-1">
-                            Starting From ₹49,999
-                          </p>
-                        </Link>
-                      </div>
-                    </div>
-                  ) : (
-                    // Standard Mega Menu Columns
-                    <div className="flex gap-8 justify-between">
-                      <div className="flex gap-12 flex-1 flex-wrap">
-                        {activeTab.columns?.map((col, colIndex) => (
-                          <div
-                            key={colIndex}
-                            className="flex flex-col gap-8 min-w-[160px]"
-                          >
-                            {col.sections.map((section, secIndex) => (
-                              <div key={secIndex}>
-                                <h4 className="mb-3 text-[14px] font-bold text-foreground">
-                                  {section.heading}
-                                </h4>
-                                {/* UPDATED: Margin reduced to 3px spacing between links */}
-                                <ul className="space-y-[3px]">
-                                  {section.links.map((link) => (
-                                    <li key={link.title}>
-                                      <Link
-                                        href={link.href}
-                                        className="text-[13px] text-muted transition-colors hover:text-secondary"
-                                      >
-                                        {link.title}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            ))}
-                          </div>
-                        ))}
-                      </div>
-
-                      {activeTab.promo && (
-                        <div className="w-[300px] shrink-0 border-l border-border pl-8 hidden xl:block">
-                          <Link
-                            href={activeTab.promo.href || "#"}
-                            className="block overflow-hidden rounded-md bg-surface group relative h-[350px]"
-                          >
-                            <img
-                              src={activeTab.promo.img || ""}
-                              alt="Category Promo"
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                            />
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Placeholder to prevent layout jump when category bar becomes sticky */}
-      {isScrolled && <div className="hidden lg:block h-[53px] w-full" />}
-
-      {/* Mobile Drawer */}
+      {/* Menu Drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -477,20 +294,21 @@ const Header = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[2000] bg-black/50 lg:hidden"
+              className="fixed inset-0 z-[2000] bg-black/50"
               onClick={() => setIsMobileMenuOpen(false)}
             />
+            {/* Primary Drawer */}
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "tween", duration: 0.3 }}
-              className="fixed left-0 top-0 z-[2001] h-full w-[min(85vw,350px)] overflow-y-auto bg-background px-5 py-6 shadow-2xl lg:hidden"
+              className="fixed left-0 top-0 z-[2001] h-full w-[min(85vw,400px)] overflow-y-auto bg-background px-8 py-8 shadow-2xl"
             >
               <div className="mb-6 flex items-center justify-between">
                 <img
-                  src="/assets/Image/nestcraft-logo.svg"
-                  alt="NestCraft"
+                  src={normalizeLogoUrl(logoUrl) || defaultLogo}
+                  alt={companyName || "NestCraft"}
                   className="h-10 w-auto"
                 />
                 <button
@@ -501,23 +319,156 @@ const Header = ({
                 </button>
               </div>
               <div className="space-y-4">
-                {displayMenus.map((tab) => (
-                  <div key={tab.key} className="border-b border-border pb-3">
-                    <Link
-                      href={`/${tab.key}`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className={`block text-lg font-semibold ${tab.isLuxe ? "text-black" : "text-foreground"}`}
+                {displayMenus.map((tab) => {
+                  const hasSubMenu = tab.columns && tab.columns.length > 0;
+                  const isExpanded = expandedDrawerTab === tab.key;
+                  const categorySlug = tab.title ? tab.title.toLowerCase().replace(/\s+/g, '-') : tab.key.toLowerCase().replace(/\s+/g, '-');
+
+                  return (
+                    <div
+                      key={tab.key}
+                      className="border-b border-border pb-3"
+                      onMouseEnter={() => {
+                        if (hasSubMenu) setExpandedDrawerTab(tab.key);
+                      }}
                     >
-                      {tab.title}
-                    </Link>
-                  </div>
-                ))}
+                      <div className="flex items-center justify-between group cursor-pointer">
+                        <Link
+                          href={`/category/${categorySlug}`}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`block text-lg font-semibold flex-1 ${tab.isLuxe ? "text-black" : "text-foreground"} group-hover:text-secondary transition-colors`}
+                        >
+                          {tab.title}
+                        </Link>
+                        {hasSubMenu && (
+                          <button
+                            onClick={() => setExpandedDrawerTab(isExpanded ? null : tab.key)}
+                            className="p-2 text-muted hover:text-foreground transition-colors lg:hidden"
+                          >
+                            <ChevronRight size={20} className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                          </button>
+                        )}
+                        {/* On Desktop, show a right arrow always if it has submenu, matching Swadesh */}
+                        {hasSubMenu && (
+                          <div className="hidden lg:flex p-2 text-muted">
+                            <ChevronRight size={20} className="transition-transform duration-200 group-hover:translate-x-1" />
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Mobile Accordion */}
+                      <div className="lg:hidden">
+                        <AnimatePresence>
+                          {hasSubMenu && isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="pt-4 pb-2 pl-4 space-y-6">
+                                {tab.columns?.map((col: any, colIdx: number) => (
+                                  <div key={colIdx} className="space-y-4">
+                                    {col.sections?.map((section: any, secIdx: number) => (
+                                      <div key={secIdx}>
+                                        <h4 className="text-[13px] font-bold text-foreground mb-3">{section.heading}</h4>
+                                        <ul className="space-y-2.5">
+                                          {section.links?.map((link: any, linkIdx: number) => {
+                                            const href = link.href === "#" ? `/category/${link.title.toLowerCase().replace(/\s+/g, '-')}` : link.href;
+                                            return (
+                                              <li key={linkIdx}>
+                                                <Link
+                                                  href={href}
+                                                  onClick={() => setIsMobileMenuOpen(false)}
+                                                  className="text-[13px] text-muted hover:text-secondary transition-colors block"
+                                                >
+                                                  {link.title}
+                                                </Link>
+                                              </li>
+                                            );
+                                          })}
+                                        </ul>
+                                      </div>
+                                    ))}
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
+
+            {/* Desktop Secondary Flyout Drawer */}
+            <div className="hidden lg:block">
+              <AnimatePresence>
+                {expandedDrawerTab && (
+                  <motion.div
+                    key={expandedDrawerTab}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ type: "tween", duration: 0.2 }}
+                    className="fixed left-[400px] top-0 z-[2000] h-full w-[450px] overflow-y-auto bg-surface px-10 py-12 shadow-2xl border-l border-border"
+                  >
+                    {(() => {
+                      const activeTab = displayMenus.find(t => t.key === expandedDrawerTab);
+                      if (!activeTab || !activeTab.columns) return null;
+                      
+                      const activeCategorySlug = activeTab.title ? activeTab.title.toLowerCase().replace(/\s+/g, '-') : activeTab.key.toLowerCase().replace(/\s+/g, '-');
+                      
+                      return (
+                        <div className="space-y-10">
+                          <Link
+                            href={`/category/${activeCategorySlug}`}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="text-lg font-semibold text-foreground hover:text-secondary transition-colors block mb-4"
+                          >
+                            See all {activeTab.title}
+                          </Link>
+
+                          {activeTab.columns.map((col: any, colIdx: number) => (
+                            <div key={colIdx} className="space-y-8">
+                              {col.sections?.map((section: any, secIdx: number) => (
+                                <div key={secIdx}>
+                                  <h4 className="text-[11px] font-black uppercase tracking-[1.5px] text-muted mb-4">{section.heading}</h4>
+                                  <ul className="space-y-3">
+                                    {section.links?.map((link: any, linkIdx: number) => {
+                                      // Optional: Format submenu links too, just in case backend has them as just text names without paths, 
+                                      // but assuming backend provides proper `link.href` for sub-links if needed, we'll keep `link.href` or fix it if it's '#'
+                                      const href = link.href === "#" ? `/category/${link.title.toLowerCase().replace(/\s+/g, '-')}` : link.href;
+                                      return (
+                                        <li key={linkIdx}>
+                                          <Link
+                                            href={href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="text-[14px] text-foreground hover:text-secondary transition-colors block"
+                                          >
+                                            {link.title}
+                                          </Link>
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 };
 
@@ -540,10 +491,10 @@ const SearchOverlay = ({
   const filteredProducts =
     query.length > 1
       ? products.filter(
-          (p) =>
-            p.title.toLowerCase().includes(query.toLowerCase()) ||
-            p.category.toLowerCase().includes(query.toLowerCase()),
-        )
+        (p) =>
+          p.title.toLowerCase().includes(query.toLowerCase()) ||
+          p.category.toLowerCase().includes(query.toLowerCase()),
+      )
       : [];
 
   const handleSelect = (id: number) => {
@@ -802,7 +753,7 @@ export default function SiteChrome({
 
   const primaryLogo = normalizeLogoUrl(
     brandConfig?.logos?.find((l: any) => l.id === "primary")?.url ||
-      brandConfig?.logos?.[0]?.url,
+    brandConfig?.logos?.[0]?.url,
   );
 
   const companyName = brandConfig?.companyInfo?.name || "NestCraft";
@@ -829,3 +780,4 @@ export default function SiteChrome({
     </div>
   );
 }
+

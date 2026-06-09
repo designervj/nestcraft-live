@@ -113,7 +113,7 @@ const CheckoutPage = () => {
     } else {
       return acc + rule.rate;
     }
-  }, 0);
+  }, 0) || 0;
 
   const totalTax =
     Math.max(0, cartTotal - discountAmount) * (amoutTaxable / 100);

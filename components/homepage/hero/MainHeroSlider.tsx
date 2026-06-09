@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Check, ChevronLeft, ChevronRight, Pencil, X } from "lucide-react";
+import { ArrowRight, Check, ChevronLeft, ChevronRight, Pencil, X, VolumeX, Pause } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { RootState } from "@/lib/store/store";
 import { useSelector } from "react-redux";
@@ -282,201 +282,47 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
       <div className="pointer-events-none absolute left-[-120px] top-[10%] h-[260px] w-[260px] rounded-full bg-secondary/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-100px] right-[-80px] h-[300px] w-[300px] rounded-full bg-primary/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100vh-106px)] max-w-[1440px] items-center px-[5%] py-12 lg:py-16">
-        <div className="grid w-full items-end gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          {/* left content */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`content-${activeSlide.id}`}
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -18 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="max-w-[720px]"
-            >
-              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-md">
-                <span className="h-2 w-2 rounded-full bg-secondary" />
-                <EditableField
-                  field="label"
-                  value={activeSlide.label}
-                  className="text-[11px] font-black uppercase tracking-[2px] text-white/85"
-                />
-              </div>
+      <div className="relative z-10 mx-auto flex min-h-screen w-full flex-col items-center justify-center px-[5%] text-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`content-${activeSlide.id}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col items-center w-full"
+          >
+            <div className="mb-6">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.3em] text-white">
+                WELCOME
+              </span>
+            </div>
 
-              <h1 className="font-heading text-[44px] font-bold leading-[0.98] tracking-tight text-white sm:text-[54px] lg:text-[70px] xl:text-[82px]">
-                {activeSlide.title && (
-                  <EditableField
-                    field="title"
-                    value={activeSlide.title}
-                    className=""
-                  />
-                )}
-                {activeSlide.highlight && (
-                  <EditableField
-                    field="highlight"
-                    value={activeSlide.highlight}
-                    className="block text-secondary"
-                    highlight
-                  />
-                )}
-                {activeSlide.titleEnd && (
-                  <EditableField
-                    field="titleEnd"
-                    value={activeSlide.titleEnd}
-                    className="block"
-                  />
-                )}
-              </h1>
+            <h1 className="w-full max-w-[90%] font-serif text-[44px] font-normal leading-[1.2] text-white sm:text-[56px] lg:text-[72px] xl:text-[84px]">
+              {activeSlide.title && <span>{activeSlide.title} </span>}
+              {activeSlide.highlight && <span className="italic">{activeSlide.highlight} </span>}
+              {activeSlide.titleEnd && <span>{activeSlide.titleEnd}</span>}
+            </h1>
 
-              <div className="mt-6 max-w-[46ch] text-[17px] font-semibold leading-8 text-white/75 lg:text-[18px]">
-                <EditableField
-                  field="description"
-                  value={activeSlide.description}
-                  multiline
-                />
-              </div>
-
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-                <button className="inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-[14px] font-semibold uppercase tracking-wider text-white transition-all hover:bg-primary/90">
-                  Explore Collection
-                </button>
-
-                <button className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-8 text-[14px] font-semibold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:border-secondary hover:text-secondary">
-                  Shop New Arrivals
-                </button>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* right floating product card */}
-          <div className="flex justify-start lg:justify-end">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`card-${activeSlide.id}`}
-                initial={{ opacity: 0, y: 28 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 18 }}
-                transition={{ duration: 0.6 }}
-                className="w-full max-w-[360px] rounded-[28px] border border-white/15 bg-white/10 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.2)] backdrop-blur-xl lg:p-6"
-              >
-                <p className="text-[11px] font-black uppercase tracking-[2px] text-secondary">
-                  Featured Piece
-                </p>
-
-                <div className="mt-3">
-                  <EditableField
-                    field="product"
-                    value={activeSlide.product}
-                    className="font-heading text-[28px] font-bold leading-tight text-white"
-                  />
-                </div>
-
-                <div className="mt-2 text-sm font-semibold text-white/70">
-                  <EditableField
-                    field="price"
-                    value={activeSlide.price}
-                  />
-                </div>
-
-                <p className="mt-4 text-[15px] font-medium leading-7 text-white/72">
-                  Premium materials, sculptural comfort, and a refined
-                  silhouette designed for modern interiors.
-                </p>
-
-                <div className="mt-6 flex items-center justify-between border-t border-white/15 pt-5">
-                  <span className="text-[12px] font-black uppercase tracking-[2px] text-white/65">
-                    Shop Now
-                  </span>
-                  <button className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-black transition-transform hover:scale-105">
-                    <ArrowRight size={16} />
-                  </button>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
+            <div className="mt-8 mx-auto w-full max-w-3xl text-[16px] sm:text-[18px] lg:text-[20px] font-normal leading-relaxed text-white/90 font-serif">
+              {activeSlide.description}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* bottom controls strip */}
-      <div className="absolute bottom-0 left-0 right-0 z-20">
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-5 px-[5%] pb-6 lg:flex-row lg:items-end lg:justify-between">
-          {/* progress + dots */}
-          <div className="w-full max-w-[420px]">
-            <div className="mb-4 h-[2px] w-full overflow-hidden rounded-full bg-white/20">
-              <motion.div
-                key={progressKey}
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 10, ease: "linear" }}
-                className="h-full bg-secondary"
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              {slides.map((slide:any, index:number) => (
-                <button
-                  key={slide.id}
-                  onClick={() => goToSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                  className={`rounded-full transition-all ${activeIndex === index
-                      ? "h-2.5 w-9 bg-secondary"
-                      : "h-2.5 w-2.5 bg-white/45 hover:bg-white"
-                    }`}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* bottom glass strip */}
-          <div className="grid w-full gap-3 rounded-[24px] border border-white/10 bg-white/10 p-4 backdrop-blur-xl sm:grid-cols-3 lg:max-w-[720px] lg:p-5  hidden">
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[2px] text-secondary">
-                Free Delivery
-              </p>
-              <p className="mt-1 text-sm font-semibold text-white/80">
-                On premium orders above ₹999
-              </p>
-            </div>
-
-            <div>
-              <p className="text-[11px] font-black uppercase tracking-[2px] text-secondary">
-                Custom Crafted
-              </p>
-              <p className="mt-1 text-sm font-semibold text-white/80">
-                Design-led essentials for modern homes
-              </p>
-            </div>
-
-            <div className="flex items-end justify-between gap-4">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-[2px] text-secondary">
-                  Customer Favorite
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white/80">
-                  Bestselling furniture collections
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={goPrev}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition-all hover:border-secondary hover:text-secondary"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <button
-                  onClick={goNext}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white transition-all hover:border-secondary hover:text-secondary"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* bottom controls (Swadesh style) */}
+      {/* <div className="absolute bottom-8 right-8 z-20 flex gap-4">
+        <button className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm border border-white/20 transition-all hover:bg-black/40">
+          <VolumeX size={18} />
+        </button>
+        <button className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/20 text-white backdrop-blur-sm border border-white/20 transition-all hover:bg-black/40">
+          <Pause size={18} />
+        </button>
+      </div> */}
     </section>
   );
 };
 
 export default MainHeroSlider;
+
