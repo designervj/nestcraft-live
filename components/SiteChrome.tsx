@@ -322,6 +322,7 @@ const Header = ({
                 {displayMenus.map((tab) => {
                   const hasSubMenu = tab.columns && tab.columns.length > 0;
                   const isExpanded = expandedDrawerTab === tab.key;
+                  const categorySlug = tab.title ? tab.title.toLowerCase().replace(/\s+/g, '-') : tab.key.toLowerCase().replace(/\s+/g, '-');
 
                   return (
                     <div
@@ -333,7 +334,7 @@ const Header = ({
                     >
                       <div className="flex items-center justify-between group cursor-pointer">
                         <Link
-                          href={`/${tab.key}`}
+                          href={`/category/${categorySlug}`}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={`block text-lg font-semibold flex-1 ${tab.isLuxe ? "text-black" : "text-foreground"} group-hover:text-secondary transition-colors`}
                         >
@@ -372,17 +373,20 @@ const Header = ({
                                       <div key={secIdx}>
                                         <h4 className="text-[13px] font-bold text-foreground mb-3">{section.heading}</h4>
                                         <ul className="space-y-2.5">
-                                          {section.links?.map((link: any, linkIdx: number) => (
-                                            <li key={linkIdx}>
-                                              <Link
-                                                href={link.href}
-                                                onClick={() => setIsMobileMenuOpen(false)}
-                                                className="text-[13px] text-muted hover:text-secondary transition-colors block"
-                                              >
-                                                {link.title}
-                                              </Link>
-                                            </li>
-                                          ))}
+                                          {section.links?.map((link: any, linkIdx: number) => {
+                                            const href = link.href === "#" ? `/category/${link.title.toLowerCase().replace(/\s+/g, '-')}` : link.href;
+                                            return (
+                                              <li key={linkIdx}>
+                                                <Link
+                                                  href={href}
+                                                  onClick={() => setIsMobileMenuOpen(false)}
+                                                  className="text-[13px] text-muted hover:text-secondary transition-colors block"
+                                                >
+                                                  {link.title}
+                                                </Link>
+                                              </li>
+                                            );
+                                          })}
                                         </ul>
                                       </div>
                                     ))}
@@ -414,10 +418,13 @@ const Header = ({
                     {(() => {
                       const activeTab = displayMenus.find(t => t.key === expandedDrawerTab);
                       if (!activeTab || !activeTab.columns) return null;
+                      
+                      const activeCategorySlug = activeTab.title ? activeTab.title.toLowerCase().replace(/\s+/g, '-') : activeTab.key.toLowerCase().replace(/\s+/g, '-');
+                      
                       return (
                         <div className="space-y-10">
                           <Link
-                            href={`/${activeTab.key}`}
+                            href={`/category/${activeCategorySlug}`}
                             onClick={() => setIsMobileMenuOpen(false)}
                             className="text-lg font-semibold text-foreground hover:text-secondary transition-colors block mb-4"
                           >
@@ -430,17 +437,22 @@ const Header = ({
                                 <div key={secIdx}>
                                   <h4 className="text-[11px] font-black uppercase tracking-[1.5px] text-muted mb-4">{section.heading}</h4>
                                   <ul className="space-y-3">
-                                    {section.links?.map((link: any, linkIdx: number) => (
-                                      <li key={linkIdx}>
-                                        <Link
-                                          href={link.href}
-                                          onClick={() => setIsMobileMenuOpen(false)}
-                                          className="text-[14px] text-foreground hover:text-secondary transition-colors block"
-                                        >
-                                          {link.title}
-                                        </Link>
-                                      </li>
-                                    ))}
+                                    {section.links?.map((link: any, linkIdx: number) => {
+                                      // Optional: Format submenu links too, just in case backend has them as just text names without paths, 
+                                      // but assuming backend provides proper `link.href` for sub-links if needed, we'll keep `link.href` or fix it if it's '#'
+                                      const href = link.href === "#" ? `/category/${link.title.toLowerCase().replace(/\s+/g, '-')}` : link.href;
+                                      return (
+                                        <li key={linkIdx}>
+                                          <Link
+                                            href={href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className="text-[14px] text-foreground hover:text-secondary transition-colors block"
+                                          >
+                                            {link.title}
+                                          </Link>
+                                        </li>
+                                      );
+                                    })}
                                   </ul>
                                 </div>
                               ))}
