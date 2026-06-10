@@ -59,7 +59,8 @@
           "type": "usp-item",
           "props": {
             "title": { "en": "Fast Delivery", "hi": "तेज़ डिलीवरी" },
-            "description": { "en": "Doorstep shipping worldwide", "hi": "घर तक डिलीवरी" }
+            "description": { "en": "Doorstep shipping worldwide", "hi": "घर तक डिलीवरी" },
+            "icon": "truck"
           }
         },
         {
@@ -67,7 +68,26 @@
           "type": "usp-item",
           "props": {
             "title": { "en": "Secure Checkout", "hi": "सुरक्षित भुगतान" },
-            "description": { "en": "Protected payments & data", "hi": "सुरक्षित पेमेंट और डेटा" }
+            "description": { "en": "Protected payments & data", "hi": "सुरक्षित पेमेंट और डेटा" },
+            "icon": "shield-check"
+          }
+        },
+        {
+          "id": "usp-3",
+          "type": "usp-item",
+          "props": {
+            "title": { "en": "Easy Returns", "hi": "आसान रिटर्न" },
+            "description": { "en": "14-day hassle-free policy", "hi": "14 दिन की आसान वापसी" },
+            "icon": "refresh-ccw"
+          }
+        },
+        {
+          "id": "usp-4",
+          "type": "usp-item",
+          "props": {
+            "title": { "en": "Premium Craft", "hi": "प्रीमियम क्राफ्ट" },
+            "description": { "en": "Materials built for years", "hi": "सालों के लिए प्रीमियम मटेरियल" },
+            "icon": "sparkles"
           }
         }
       ]

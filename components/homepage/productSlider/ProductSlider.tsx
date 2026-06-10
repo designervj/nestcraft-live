@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import React, { useState, useRef, useMemo } from "react";
 import { Star, Heart, ChevronLeft, ChevronRight } from "lucide-react";
@@ -7,17 +6,21 @@ import Link from "next/link";
 import { products as defaultProducts } from "@/data/products";
 import { defaultProductSliderData } from "./productSliderData";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface ProductSliderProps {
   section?: any;
 }
 
 const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
+  const dispatch = useAppDispatch();
   const [activePage, setActivePage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -48,6 +51,9 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
   const viewAllLabel = getV(p.viewAllLabel);
   const viewAllLink = p.viewAllLink?.value || p.viewAllLink || "/shop";
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
+
   const handleScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
@@ -60,7 +66,7 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
       const child = scrollRef.current.firstElementChild as HTMLElement;
       if (child) {
         const itemWidth = child.offsetWidth;
-        const gap = 24; // gap-6 is 24px
+        const gap = 24;
         scrollRef.current.scrollBy({
           left: dir * (itemWidth + gap),
           behavior: "smooth",
@@ -77,17 +83,17 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">
-            {badge}
+            <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
           </p>
           <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-            {heading}
+            <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
           </h2>
         </div>
         <Link
           href={viewAllLink}
           className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:flex hidden"
         >
-          {viewAllLabel}
+          <EditableText value={viewAllLabel} isEditable={isEditable} onSave={handle('props.viewAllLabel.en')} tag="span" />
         </Link>
       </div>
 
@@ -101,10 +107,10 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
           const dp = prod.props || {};
           const title = getV(dp.title) || getV(prod.title) || "";
           const price = getV(dp.price) || getV(prod.price) || "";
-          const badge = getV(dp.badge) || getV(prod.badge) || "";
+          const prodBadge = getV(dp.badge) || getV(prod.badge) || "";
           const id = prod.id || idx;
           const img = dp.image?.value || dp.image || prod.img || prod.image || "";
-            
+
             return (
               <div
                 key={id}
@@ -117,15 +123,15 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
                       alt={title}
                       className="w-full h-full object-cover transition-transform duration-260 group-hover:scale-105"
                     />
-                    {badge && (
+                    {prodBadge && (
                       <div className="absolute top-3.5 left-3.5 bg-surface/88 backdrop-blur-md border border-border p-[8px_10px] rounded-full text-[10px] font-black tracking-[2px] uppercase text-foreground">
-                        {badge}
+                        <EditableText value={prodBadge} isEditable={isEditable} onSave={handle(`content.${idx}.props.badge.en`)} tag="span" />
                       </div>
                     )}
                     <button
                       className="absolute top-3 right-3 w-[42px] h-[42px] rounded-full bg-surface/88 backdrop-blur-md border border-border flex items-center justify-center hover:-translate-y-0.5 hover:border-secondary/55 transition-all text-foreground/75"
                       onClick={(e) => {
-                        e.preventDefault(); /* Handle wishlist */
+                        e.preventDefault();
                       }}
                     >
                       <Heart size={18} />
@@ -133,19 +139,19 @@ const ProductSlider = ({ section: propSection }: ProductSliderProps) => {
                     <button
                       className="absolute bottom-0 w-full p-[15px] bg-foreground/92 text-surface text-[12px] font-black tracking-[2px] uppercase translate-y-full group-hover:translate-y-0 transition-transform duration-220"
                       onClick={(e) => {
-                        e.preventDefault(); /* Handle add to bag */
+                        e.preventDefault();
                       }}
                     >
-                      ADD TO BAG — {price}
+                      ADD TO BAG — <EditableText value={price} isEditable={isEditable} onSave={handle(`content.${idx}.props.price.en`)} tag="span" />
                     </button>
                   </div>
                   <div>
                     <h4 className="font-heading text-[26px] font-bold leading-tight mb-1.5">
-                      {title}
+                      <EditableText value={title} isEditable={isEditable} onSave={handle(`content.${idx}.props.title.en`)} tag="span" />
                     </h4>
                     <div className="flex justify-between items-center gap-2.5">
                       <div className="text-muted text-[14px] font-black">
-                        {price}
+                        <EditableText value={price} isEditable={isEditable} onSave={handle(`content.${idx}.props.price.en`)} tag="span" />
                       </div>
                       <div className="flex gap-1 items-center">
                         {[1, 2, 3, 4, 5].map((s) => (

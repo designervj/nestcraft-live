@@ -91,7 +91,7 @@ const MainHeroSlider = ({ initialSlides }: { initialSlides?: any[] }) => {
 
   const getCurrentSection = useMemo(() => {
     if (!currentPages) return;
-    return currentPages.content?.find((page: any) => page.adminTitle === "Hero" || page.adminTitle === "Premium Hero Slider");
+    return currentPages.content?.find((page: any) =>page.adminTitle === "Premium Hero Slider");
   }, [currentPages]);
 
   const slides = useMemo(() => {

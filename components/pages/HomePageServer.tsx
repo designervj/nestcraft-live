@@ -1,4 +1,3 @@
-
 import React from "react";
 import Hero from "../homepage/hero/Hero";
 import USP from "../homepage/usp/USP";
@@ -13,6 +12,7 @@ import Blog from "../homepage/blog/Blog";
 import Newsletter from "../homepage/newsletter/Newsletter";
 import FAQ from "../homepage/faq/FAQ";
 import InstagramGallery from "../homepage/instagram/InstagramGallery";
+import LogoStrip from "../homepage/logoStrip/LogoStrip";
 import { getSection, getV } from "@/lib/cmsUtils";
 import Link from "next/link";
 
@@ -35,8 +35,6 @@ interface HomePageServerProps {
 }
 
 const HomePageServer = ({ data, lang }: HomePageServerProps) => {
-
-
   const content = Array.isArray(data?.content) ? data.content : [];
 
   const ctaSection = getSection(content, "CTA");
@@ -50,22 +48,26 @@ const HomePageServer = ({ data, lang }: HomePageServerProps) => {
   return (
     <>
       {/* Client-side logic components */}
-    {/* <FetchAllData/> */}
-     
-      {/* Sections */}
-      <Hero section={getSection(content, "Premium Hero Slider") || getSection(content, "Hero")} />
+      <GetAllPages />
+      <GetAllMenus />
+      <GetAllForms />
+      <UpdateCurrentPage />
+
+      {/* Sections — each reads its data from Redux currentPages */}
+      <Hero />
       <USP />
-      <Services section={getSection(content, "Services")} />
-      <Collections section={getSection(content, "Collections")} />
-      <ShopByRoom section={getSection(content, "Shop By Room Section")} />
-      <FeaturedBanner section={getSection(content, "FeaturedBanner")} />
-      <ProductSlider section={getSection(content, "New Essentials Slider")} />
-      <Craft section={getSection(content, "Craft & Quality Section")} />
-      <Testimonials section={getSection(content, "Customer Testimonials")} />
-      <Blog section={getSection(content, "Latest Blog Posts")} />
-      <FAQ section={getSection(content, "Homepage FAQs")} />
-      <Newsletter section={getSection(content, "Newsletter Section")} />
-      <InstagramGallery section={getSection(content, "Instagram Gallery")} />
+      <Services />
+      <Collections />
+      <ShopByRoom />
+      <FeaturedBanner />
+      <ProductSlider />
+      <Craft />
+      <Testimonials />
+      <Blog />
+      <FAQ />
+      <Newsletter />
+      <InstagramGallery />
+      <LogoStrip />
 
       {ctaBlock && (
         <section

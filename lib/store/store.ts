@@ -41,6 +41,9 @@ export const makeStore = () => {
       branding: brandingReducer,
       businessBlueprint: businessBlueprintReducer,
     },
+    devTools: {
+      name: "Nestcraft Living",
+    },
   });
 };
 

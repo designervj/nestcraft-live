@@ -3,16 +3,20 @@ import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { defaultFeaturedBanner } from "./featuredBannerData";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface FeaturedBannerProps {
   section?: any;
 }
 
 const FeaturedBanner = ({ section: propSection }: FeaturedBannerProps) => {
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -44,8 +48,8 @@ const FeaturedBanner = ({ section: propSection }: FeaturedBannerProps) => {
   const buttonLabel = getV(p.buttonLabel);
   const buttonLink = p.buttonLink?.value || p.buttonLink || "/shop";
 
-  const imgBlock = content?.find((b: any) => b.type === "image");
-  const imgUrl = imgBlock?.props?.image?.value || imgBlock?.url || "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&q=80&w=1200";
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
 
   return (
     <section
@@ -61,7 +65,7 @@ const FeaturedBanner = ({ section: propSection }: FeaturedBannerProps) => {
       >
         <img
           src={"https://cdn.swadeshonline.com/v2/patient-paper-41f385/swad-p/wrkr/company/1/applications/64df098649de58779e64de52/theme/pictures/free/resize-w:600/CAT_Carousel_Design_Objects.png"}
-          alt={imgBlock?.props?.alt?.value || imgBlock?.alt || "Bed"}
+          alt=""
           className="w-full h-full object-cover saturate-[1.02] contrast-[1.02]"
         />
       </motion.div>
@@ -72,24 +76,20 @@ const FeaturedBanner = ({ section: propSection }: FeaturedBannerProps) => {
         className="p-[50px] lg:p-[90px]"
       >
         <span className="text-secondary uppercase text-[12px] tracking-[3px] font-black">
-          {badge}
+          <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
         </span>
         <h2 className="text-[38px] lg:text-[48px] font-bold leading-tight mt-2">
-          {/* {heading} */}
-          Art & Decor
-
-
+          <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
         </h2>
         <p className="text-white/80 font-semibold max-w-[540px] mt-3">
-          {/* {description} */}
-          A showcase of paintings, tapestries, sculptures, homeware, lighting, and design objects spanning centuries of artistry and technique.
+          <EditableText value={description} isEditable={isEditable} onSave={handle('props.description.en')} tag="span" />
         </p>
         {buttonLabel && (
           <Link
             href={buttonLink}
             className="mt-5 px-6 h-11 inline-flex items-center rounded-full border border-white/70 text-white text-[14px] font-semibold uppercase tracking-wider hover:bg-white/10 transition-all"
           >
-            {buttonLabel}
+            <EditableText value={buttonLabel} isEditable={isEditable} onSave={handle('props.buttonLabel.en')} tag="span" />
           </Link>
         )}
       </motion.div>

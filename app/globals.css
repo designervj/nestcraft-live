@@ -299,6 +299,29 @@
 .sidebar-menu-button:hover{
   background-color: #0d6533 !important;
 }
+.editable-text {
+  cursor: pointer;
+  outline: 1px dashed transparent;
+  transition: outline-color 0.15s;
+}
+.editable-text:hover {
+  outline-color: rgba(13, 101, 51, 0.4);
+}
+.editable-input {
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
 .eapps-instagram-feed-title {
   font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   font-size: 35px !important;

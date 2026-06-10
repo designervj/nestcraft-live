@@ -16,5 +16,6 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   const { locale } = await params;
   const data = await getPageData("home");
 
+
   return <HomePageServer data={data} lang={locale} />;
 }
