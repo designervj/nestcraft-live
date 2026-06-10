@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import React, { useMemo } from "react";
 import { categories as defaultCategories } from "@/data/products";
@@ -8,15 +7,19 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface ShopByRoomProps {
   section?: any;
 }
 
 const ShopByRoom = ({ section: propSection }: ShopByRoomProps) => {
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -46,6 +49,9 @@ const ShopByRoom = ({ section: propSection }: ShopByRoomProps) => {
   const buttonLabel = getV(p.buttonLabel);
   const buttonLink = p.buttonLink?.value || p.buttonLink || "/shop";
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
+
   return (
     <section
       data-annotate-id="home-shop-by-room-section"
@@ -55,17 +61,17 @@ const ShopByRoom = ({ section: propSection }: ShopByRoomProps) => {
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">
-            {badge}
+            <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
           </p>
           <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-            {heading}
+            <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
           </h2>
         </div>
         <Link
           href={buttonLink}
           className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:flex hidden "
         >
-          {buttonLabel}
+          <EditableText value={buttonLabel} isEditable={isEditable} onSave={handle('props.buttonLabel.en')} tag="span" />
         </Link>
       </div>
 
@@ -76,7 +82,7 @@ const ShopByRoom = ({ section: propSection }: ShopByRoomProps) => {
           const id = item.id || idx;
           const img = sp.image?.value || sp.image || item.img || item.image || "";
           const exploreLabel = getV(p.exploreLabel);
-          
+
           return (
             <Link
               key={id}
@@ -99,10 +105,10 @@ const ShopByRoom = ({ section: propSection }: ShopByRoomProps) => {
                 <div className="p-[18px_18px_20px] flex justify-between items-end gap-3">
                   <div>
                     <h4 className="text-[26px] font-bold leading-tight">
-                      {name}
+                      <EditableText value={name} isEditable={isEditable} onSave={handle(`content.${idx}.props.name.en`)} tag="span" />
                     </h4>
                     <small className="text-muted font-black tracking-[2px] uppercase text-[11px] block mt-1">
-                      {exploreLabel}
+                      <EditableText value={exploreLabel} isEditable={isEditable} onSave={handle('props.exploreLabel.en')} tag="span" />
                     </small>
                   </div>
                   <ArrowRight className="text-secondary" size={18} />

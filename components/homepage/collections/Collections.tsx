@@ -1,18 +1,22 @@
 "use client";
 import React, { useMemo } from "react";
-import { defaultCollections, defaultCollectionProps } from "./collectionsData";
+// import { defaultCollections, defaultCollectionProps } from "./collectionsData";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface CollectionsProps {
   section?: any;
 }
 
 const Collections = ({ section: propSection }: CollectionsProps) => {
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -29,8 +33,8 @@ const Collections = ({ section: propSection }: CollectionsProps) => {
 
   const section = propSection || getCurrentSection;
 
-  const p = (section as any)?.props || defaultCollectionProps;
-  const items = (section as any)?.content || defaultCollections;
+  const p = (section as any)?.props 
+  const items = (section as any)?.content
 
   const getV = (field: any) => {
     if (!field) return "";
@@ -39,9 +43,12 @@ const Collections = ({ section: propSection }: CollectionsProps) => {
     return val || "";
   };
 
-  const heading = getV(p.heading);
-  const viewAllLabel = getV(p.viewAllLabel);
-  const viewAllLink = p.viewAllLink?.value || p.viewAllLink || "/category";
+  const heading = getV(p?.heading);
+  const viewAllLabel = getV(p?.viewAllLabel);
+  const viewAllLink = p?.viewAllLink?.value || p?.viewAllLink || "/category";
+
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
 
   return (
     <section
@@ -51,18 +58,18 @@ const Collections = ({ section: propSection }: CollectionsProps) => {
     >
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-          {heading}
+          <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
         </h2>
         <Link
           href={viewAllLink}
           className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center"
         >
-          {viewAllLabel}
+          <EditableText value={viewAllLabel} isEditable={isEditable} onSave={handle('props.viewAllLabel.en')} tag="span" />
         </Link>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {items.map((item: any, idx: number) => {
+        {items?.map((item: any, idx: number) => {
           const sp = item.props || {};
           const title = getV(sp.title) || getV(item.title) || "";
           const image = sp.image?.value || sp.image || item.image || "";
@@ -88,7 +95,9 @@ const Collections = ({ section: propSection }: CollectionsProps) => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-85 pointer-events-none" />
                 <div className="absolute bottom-7 left-7 text-white z-10">
-                  <h3 className="text-[26px] font-bold">{title}</h3>
+                  <h3 className="text-[26px] font-bold">
+                    <EditableText value={title} isEditable={isEditable} onSave={handle(`content.${idx}.props.title.en`)} tag="span" />
+                  </h3>
                 </div>
               </motion.div>
             </Link>

@@ -1,22 +1,25 @@
 "use client";
-"use client";
 
 import React, { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { Plus, Minus } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { defaultFAQs } from "./faqData";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface FAQProps {
   section?: any;
 }
 
 const FAQ = ({ section: propSection }: FAQProps) => {
+  const dispatch = useAppDispatch();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -32,7 +35,7 @@ const FAQ = ({ section: propSection }: FAQProps) => {
   const section = propSection || getCurrentSection;
 
   const p = (section as any)?.props || {};
-  
+
   const getV = (field: any) => {
     if (!field) return "";
     const val = field.value !== undefined ? field.value : field;
@@ -47,6 +50,9 @@ const FAQ = ({ section: propSection }: FAQProps) => {
 
   const items = (section as any)?.content || defaultFAQs;
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
+
   return (
     <section
       data-annotate-id="home-faq-section"
@@ -54,23 +60,23 @@ const FAQ = ({ section: propSection }: FAQProps) => {
     >
       <div className="flex flex-col items-center text-center mb-[60px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight mb-4">
-          {heading}
+          <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
         </h2>
-        {subheading && <p className="text-muted max-w-2xl mb-6">{subheading}</p>}
+        {subheading && <p className="text-muted max-w-2xl mb-6"><EditableText value={subheading} isEditable={isEditable} onSave={handle('props.subheading.en')} tag="span" /></p>}
         <Link
           href={viewAllLink}
           className="text-secondary font-black tracking-[2px] uppercase text-xs border-b border-secondary pb-1"
         >
-          {viewAllLabel}
+          <EditableText value={viewAllLabel} isEditable={isEditable} onSave={handle('props.viewAllLabel.en')} tag="span" />
         </Link>
       </div>
 
       <div className="max-w-[800px] mx-auto">
         {items.map((faq: any, idx: number) => {
-          const p = faq.props || {};
-          const title = getV(p.title) || getV(faq.title) || "";
-          const description = getV(p.description) || getV(faq.description) || "";
-          
+          const fp = faq.props || {};
+          const title = getV(fp.title) || getV(faq.title) || "";
+          const description = getV(fp.description) || getV(faq.description) || "";
+
           return (
             <div
               key={idx}
@@ -78,7 +84,9 @@ const FAQ = ({ section: propSection }: FAQProps) => {
               onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}
             >
               <div className="flex justify-between items-center gap-3.5">
-                <h4 className="font-heading text-[20px] font-bold">{title}</h4>
+                <h4 className="font-heading text-[20px] font-bold">
+                  <EditableText value={title} isEditable={isEditable} onSave={handle(`content.${idx}.props.title.en`)} tag="span" />
+                </h4>
                 {activeIndex === idx ? (
                   <Minus className="text-secondary" size={22} />
                 ) : (
@@ -93,7 +101,7 @@ const FAQ = ({ section: propSection }: FAQProps) => {
                 }}
                 className="overflow-hidden text-muted text-[15px] font-semibold"
               >
-                {description}
+                <EditableText value={description} isEditable={isEditable} onSave={handle(`content.${idx}.props.description.en`)} tag="div" />
               </motion.div>
             </div>
           );

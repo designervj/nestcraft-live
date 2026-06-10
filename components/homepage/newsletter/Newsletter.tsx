@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import React, { useState, useMemo, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
@@ -7,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { defaultNewsletterData } from "./newsletterData";
 import { fetchAllForm } from "@/lib/store/forms/formsThunk";
 import { RootState } from "@/lib/store/store";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 
 const TENANT_DB_NAME = process.env.NEXT_PUBLIC_TENANT_DB_NAME;
@@ -15,6 +16,7 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [msg, setMsg] = useState("");
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
   const pathname = usePathname();
 
   const lang = useMemo(() => {
@@ -45,23 +47,23 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
   const joinSub = getV(p.joinSub);
   const buttonLabel = getV(p.buttonLabel);
   const msgSuccess = getV(p.msgSuccess);
-  
+
   const feature1 = getV(p.feature1);
   const feature2 = getV(p.feature2);
   const feature3 = getV(p.feature3);
-  
+
   const noSpam = getV(p.noSpam);
   const unsubscribe = getV(p.unsubscribe);
   const updates = getV(p.updates);
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
 
   const { allForms, isFetchedForms } = useAppSelector((state: RootState) => state.forms);
 
- console.log("formData", formData);
   const subscriptionForm = useMemo(() => {
     if(allForms && allForms.length>0){
       const form = allForms?.find((f) => f.name === "Subscribtion Forms");
- 
       return form;
     }
     return null
@@ -104,33 +106,35 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
           <div className="max-w-[760px]">
             <div className="mb-5 inline-flex items-center rounded-full border border-white/15 bg-white/8 px-4 py-2">
               <span className="text-[12px] font-extrabold uppercase tracking-[3px] text-[#B8D35A]">
-                {badge}
+                <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
               </span>
             </div>
 
             <h3 className="max-w-[760px] font-heading text-[42px] font-bold leading-[0.95] tracking-[-0.03em] text-white sm:text-[56px] lg:text-[74px]">
-              {title}
+              <EditableText value={title} isEditable={isEditable} onSave={handle('props.title.en')} tag="span" />
             </h3>
 
             <p className="mt-6 max-w-[620px] text-[18px] font-medium leading-8 text-white/80 sm:text-[20px]">
-              {description}
+              <EditableText value={description} isEditable={isEditable} onSave={handle('props.description.en')} tag="span" />
             </p>
 
             <div className="mt-10 hidden items-center gap-8 text-white/65 lg:flex">
               <div className="flex items-center gap-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
                 <span className="text-[14px] font-semibold">
-                  {feature1}
+                  <EditableText value={feature1} isEditable={isEditable} onSave={handle('props.feature1.en')} tag="span" />
                 </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
-                <span className="text-[14px] font-semibold">{feature2}</span>
+                <span className="text-[14px] font-semibold">
+                  <EditableText value={feature2} isEditable={isEditable} onSave={handle('props.feature2.en')} tag="span" />
+                </span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#B8D35A]" />
                 <span className="text-[14px] font-semibold">
-                  {feature3}
+                  <EditableText value={feature3} isEditable={isEditable} onSave={handle('props.feature3.en')} tag="span" />
                 </span>
               </div>
             </div>
@@ -141,10 +145,10 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
             <div className="w-full max-w-[540px] rounded-[12px] border border-white/12 bg-white/10 p-4  sm:p-5">
               <div className="mb-4">
                 <p className="text-[18px] font-semibold text-white/85">
-                  {joinTitle}
+                  <EditableText value={joinTitle} isEditable={isEditable} onSave={handle('props.joinTitle.en')} tag="span" />
                 </p>
                 <p className="mt-1 text-[13px] leading-6 text-white/80">
-                  {joinSub}
+                  <EditableText value={joinSub} isEditable={isEditable} onSave={handle('props.joinSub.en')} tag="span" />
                 </p>
               </div>
 
@@ -153,7 +157,7 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
                 className="flex flex-col gap-4"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                  {subscriptionForm?.fields?.map((field) => (
+                  {subscriptionForm?.fields?.map((field: any) => (
                     <div key={field.id} className="flex-1">
                       <label className="mb-1.5 block text-[13px] font-semibold text-white/75 ml-1">
                         {field.placeholder}
@@ -178,7 +182,7 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
                     className="inline-flex py-4 items-center justify-center rounded-full bg-[#B8D35A] px-7 text-[14px] font-extrabold uppercase tracking-[0.14em] text-[#14351F] transition hover:translate-y-[-1px] hover:bg-[#c7df72] sm:h-[58px]"
                     type="submit"
                   >
-                    {buttonLabel}
+                    <EditableText value={buttonLabel} isEditable={isEditable} onSave={handle('props.buttonLabel.en')} tag="span" />
                   </button>
                 </div>
               </form>
@@ -190,11 +194,11 @@ const Newsletter = ({ section: propSection }: { section?: any }) => {
               )}
 
               <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px] font-medium text-white/55">
-                <span>{noSpam}</span>
+                <span><EditableText value={noSpam} isEditable={isEditable} onSave={handle('props.noSpam.en')} tag="span" /></span>
                 <span className="hidden h-1 w-1 rounded-full bg-white/25 sm:block" />
-                <span>{unsubscribe}</span>
+                <span><EditableText value={unsubscribe} isEditable={isEditable} onSave={handle('props.unsubscribe.en')} tag="span" /></span>
                 <span className="hidden h-1 w-1 rounded-full bg-white/25 sm:block" />
-                <span>{updates}</span>
+                <span><EditableText value={updates} isEditable={isEditable} onSave={handle('props.updates.en')} tag="span" /></span>
               </div>
             </div>
           </div>

@@ -4,16 +4,20 @@ import { Hammer, Package, PenTool } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
-import { defaultServices, defaultServiceProps } from "./serviceData";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+// import { defaultServices, defaultServiceProps } from "./serviceData";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface ServiceProps {
   section?: any;
 }
 
 const Services = ({ section: propSection }: ServiceProps) => {
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -28,8 +32,8 @@ const Services = ({ section: propSection }: ServiceProps) => {
 
   const section = propSection || getCurrentSection;
 
-  const p = (section as any)?.props || defaultServiceProps;
-  const cards = (section as any)?.content || defaultServices;
+  const p = (section as any)?.props 
+  const cards = (section as any)?.content
 
   const getV = (field: any) => {
     if (!field) return "";
@@ -38,10 +42,10 @@ const Services = ({ section: propSection }: ServiceProps) => {
     return val || "";
   };
 
-  const badge = getV(p.badge);
-  const heading = getV(p.heading);
-  const viewAllLabel = getV(p.viewAllLabel);
-  const viewAllLink = p.viewAllLink?.value || p.viewAllLink || "/services";
+  const badge = getV(p?.badge);
+  const heading = getV(p?.heading);
+  const viewAllLabel = getV(p?.viewAllLabel);
+  const viewAllLink = p?.viewAllLink?.value || p?.viewAllLink || "/services";
 
   const iconMap: Record<string, any> = {
     "pen-tool": PenTool,
@@ -50,6 +54,9 @@ const Services = ({ section: propSection }: ServiceProps) => {
   };
 
   const iconsFallback = [PenTool, Hammer, Package];
+
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
 
   return (
     <section
@@ -63,27 +70,27 @@ const Services = ({ section: propSection }: ServiceProps) => {
           viewport={{ once: true }}
         >
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">
-            {badge}
+            <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
           </p>
           <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-            {heading}
+            <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
           </h2>
         </motion.div>
         <Link
           href={viewAllLink}
           className="md:px-6 px-2 h-11 rounded-full border border-secondary/45 text-foreground md:text-[14px] text-[12px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:flex hidden"
         >
-          {viewAllLabel}
+          <EditableText value={viewAllLabel} isEditable={isEditable} onSave={handle('props.viewAllLabel.en')} tag="span" />
         </Link>
       </div>
 
       <div className="grid md:grid-cols-3 gap-7">
-        {cards.map((item: any, idx: number) => {
+        {cards?.map((item: any, idx: number) => {
           const sp = item.props || {};
           const Icon = iconMap[getV(sp.icon)] || iconsFallback[idx % iconsFallback.length];
           const title = getV(sp.title) || getV(item.title) || "";
           const description = getV(sp.description) || getV(item.description) || "";
-          
+
           return (
             <motion.div
               key={idx}
@@ -95,9 +102,11 @@ const Services = ({ section: propSection }: ServiceProps) => {
             >
               <Icon className="text-secondary mb-[18px]" size={40} />
               <h4 className="text-[22px] font-bold tracking-tight mb-2">
-                {title}
+                <EditableText value={title} isEditable={isEditable} onSave={handle(`content.${idx}.props.title.en`)} tag="span" />
               </h4>
-              <p className="text-muted font-semibold">{description}</p>
+              <p className="text-muted font-semibold">
+                <EditableText value={description} isEditable={isEditable} onSave={handle(`content.${idx}.props.description.en`)} tag="span" />
+              </p>
             </motion.div>
           );
         })}

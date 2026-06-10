@@ -5,17 +5,21 @@ import { defaultBlogPosts } from "./blogData";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface BlogProps {
   section?: any;
 }
 
 const Blog = ({ section: propSection }: BlogProps) => {
+  const dispatch = useAppDispatch();
   const [activePage, setActivePage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -45,6 +49,9 @@ const Blog = ({ section: propSection }: BlogProps) => {
 
   const items = (section as any)?.content || defaultBlogPosts;
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
+
   const handleScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
@@ -57,7 +64,7 @@ const Blog = ({ section: propSection }: BlogProps) => {
       const child = scrollRef.current.firstElementChild as HTMLElement;
       if (child) {
         const itemWidth = child.offsetWidth;
-        const gap = 24; // gap-6 is 24px
+        const gap = 24;
         scrollRef.current.scrollBy({
           left: dir * (itemWidth + gap),
           behavior: "smooth",
@@ -73,13 +80,13 @@ const Blog = ({ section: propSection }: BlogProps) => {
     >
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-          {heading}
+          <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
         </h2>
         <Link
           href={viewAllLink}
           className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:flex hidden"
         >
-          {viewAllLabel}
+          <EditableText value={viewAllLabel} isEditable={isEditable} onSave={handle('props.viewAllLabel.en')} tag="span" />
         </Link>
       </div>
 
@@ -90,11 +97,11 @@ const Blog = ({ section: propSection }: BlogProps) => {
           className="flex gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory no-scrollbar pb-1"
         >
           {items.map((post: any, idx: number) => {
-            const p = post.props || {};
-            const title = getV(p.title) || getV(post.title) || "";
-            const description = getV(p.description) || getV(post.description) || "";
-            const image = p.image?.value || p.image || post.image || "";
-            const link = p.link?.value || p.link || post.link || "#";
+            const pp = post.props || {};
+            const title = getV(pp.title) || getV(post.title) || "";
+            const description = getV(pp.description) || getV(post.description) || "";
+            const image = pp.image?.value || pp.image || post.image || "";
+            const link = pp.link?.value || pp.link || post.link || "#";
 
             return (
               <div
@@ -110,10 +117,10 @@ const Blog = ({ section: propSection }: BlogProps) => {
                     />
                   </div>
                   <span className="text-[11px] text-secondary tracking-[2px] uppercase font-black">
-                    {description}
+                    <EditableText value={description} isEditable={isEditable} onSave={handle(`content.${idx}.props.description.en`)} tag="span" />
                   </span>
                   <h4 className="font-heading text-[26px] mt-2.5 mb-3 leading-tight font-bold">
-                    {title}
+                    <EditableText value={title} isEditable={isEditable} onSave={handle(`content.${idx}.props.title.en`)} tag="span" />
                   </h4>
                   <div
                     className="inline-block mt-3 text-[12px] font-black tracking-wider uppercase border-b border-secondary hover:text-secondary transition-colors"

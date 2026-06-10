@@ -100,17 +100,20 @@ export const createPageThunk = createAsyncThunk(
 );
 
 // Update an existing page
+// Update an existing page
 export const updatePageThunk = createAsyncThunk(
   'pages/update',
   async ({ id, pageData }: { id: string; pageData: Partial<Page> }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/pages/${id}`, {
+      const response = await fetch(`/api/cms/pages/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          "x-tenant-db": tenantHeader || "",
+          "x-tenant-db": tenantHeader || "kp_nestcraft",
         },
         credentials: "include",
+
+
         body: JSON.stringify(pageData),
       });
       if (!response.ok) {
@@ -118,6 +121,7 @@ export const updatePageThunk = createAsyncThunk(
         throw new Error(errorData.message || 'Failed to update page');
       }
       const data = await response.json();
+      console.log("page updated ", data)
       return { _id: id, ...pageData } as Page; 
     } catch (error: any) {
       return rejectWithValue(error.message);

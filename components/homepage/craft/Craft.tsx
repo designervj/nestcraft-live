@@ -1,21 +1,24 @@
 "use client";
-"use client";
 
 import React, { useMemo } from "react";
 import { motion } from "motion/react";
 import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { defaultCraftData } from "./craftData";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface CraftProps {
   section?: any;
 }
 
 const Craft = ({ section: propSection }: CraftProps) => {
+  const dispatch = useAppDispatch();
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -55,6 +58,9 @@ const Craft = ({ section: propSection }: CraftProps) => {
   const listItems = listBlock?.items || listBlock?.props?.items?.value || [];
   const buttons = buttonsBlock?.items || buttonsBlock?.props?.items?.value || [];
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
+
   return (
     <section
       data-annotate-id="home-craft-section"
@@ -63,17 +69,17 @@ const Craft = ({ section: propSection }: CraftProps) => {
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">
-            {badge}
+            <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
           </p>
           <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-            {title}
+            <EditableText value={title} isEditable={isEditable} onSave={handle('props.title.en')} tag="span" />
           </h2>
         </div>
         <Link
           href={buttonLink}
           className="px-[18px] h-11 rounded-full bg-secondary/18 text-dark border border-secondary/35 text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/26 hover:border-secondary/55 transition-all flex items-center md:flex hidden"
         >
-          {buttonLabel}
+          <EditableText value={buttonLabel} isEditable={isEditable} onSave={handle('props.buttonLabel.en')} tag="span" />
         </Link>
       </div>
 
@@ -98,10 +104,10 @@ const Craft = ({ section: propSection }: CraftProps) => {
           className="bg-background/70 border border-border p-[34px] rounded-lg shadow-sm"
         >
           <h3 className="font-heading md:text-[42px] text-[28px] font-extrabold leading-none">
-            {mainHeading}
+            <EditableText value={mainHeading} isEditable={isEditable} onSave={handle('props.mainHeading.en')} tag="span" />
           </h3>
           <p className="text-muted font-semibold mt-2.5">
-            {description}
+            <EditableText value={description} isEditable={isEditable} onSave={handle('props.description.en')} tag="span" />
           </p>
 
           <div className="grid gap-3 mt-[18px]">
@@ -112,7 +118,8 @@ const Craft = ({ section: propSection }: CraftProps) => {
                   key={idx}
                   className="flex gap-2.5 items-start font-bold text-foreground/85"
                 >
-                  <CheckCircle2 className="text-secondary mt-0.5" size={18} /> {text}
+                  <CheckCircle2 className="text-secondary mt-0.5" size={18} />
+                  <EditableText value={text} isEditable={isEditable} onSave={handle(`content.${content.indexOf(listBlock)}.items.${idx}.en`)} tag="span" />
                 </div>
               );
             })}
@@ -126,12 +133,12 @@ const Craft = ({ section: propSection }: CraftProps) => {
                   key={i}
                   href={btn.link || "#"}
                   className={`px-[18px] h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider transition-all flex items-center ${
-                    i === 0 
-                    ? "bg-primary text-white hover:bg-primary/90" 
+                    i === 0
+                    ? "bg-primary text-white hover:bg-primary/90"
                     : "border border-secondary/45 text-foreground hover:bg-secondary/15"
                   }`}
                 >
-                  {label}
+                  <EditableText value={label} isEditable={isEditable} onSave={handle(`content.${content.indexOf(buttonsBlock)}.items.${i}.label.en`)} tag="span" />
                 </Link>
               );
             })}

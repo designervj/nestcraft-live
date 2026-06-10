@@ -1,21 +1,24 @@
 "use client";
-"use client";
 
 import React, { useState, useRef, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppSelector, useAppDispatch } from "@/lib/store/hooks";
 import { defaultTestimonials, defaultTestimonialProps } from "./testimonialsData";
+import EditableText from "@/components/shared/EditableText";
+import { saveField } from "@/lib/editorUtils";
 
 interface TestimonialsProps {
   section?: any;
 }
 
 const Testimonials = ({ section: propSection }: TestimonialsProps) => {
+  const dispatch = useAppDispatch();
   const [activePage, setActivePage] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
   const currentPages = useAppSelector((state) => state.pages.currentPages);
+  const isEditable = useAppSelector((state) => state.pages.isEditable);
 
   const lang = useMemo(() => {
     const segments = pathname.split("/").filter(Boolean);
@@ -43,6 +46,9 @@ const Testimonials = ({ section: propSection }: TestimonialsProps) => {
   const badge = getV(p.badge);
   const heading = getV(p.heading);
 
+  const handle = (fieldPath: string) => (value: string) =>
+    saveField(dispatch, currentPages, section?.id, fieldPath, value);
+
   const handleScroll = () => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
@@ -55,7 +61,7 @@ const Testimonials = ({ section: propSection }: TestimonialsProps) => {
       const child = scrollRef.current.firstElementChild as HTMLElement;
       if (child) {
         const itemWidth = child.offsetWidth;
-        const gap = 24; // gap-6 is 24px
+        const gap = 24;
         scrollRef.current.scrollBy({
           left: dir * (itemWidth + gap),
           behavior: "smooth",
@@ -72,10 +78,10 @@ const Testimonials = ({ section: propSection }: TestimonialsProps) => {
       <div className="flex justify-center text-center mb-[60px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">
-            {badge}
+            <EditableText value={badge} isEditable={isEditable} onSave={handle('props.badge.en')} tag="span" />
           </p>
           <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">
-            {heading}
+            <EditableText value={heading} isEditable={isEditable} onSave={handle('props.heading.en')} tag="span" />
           </h2>
         </div>
       </div>
@@ -91,7 +97,7 @@ const Testimonials = ({ section: propSection }: TestimonialsProps) => {
             const quote = getV(sp.quote) || getV(item.quote) || "";
             const author = getV(sp.author) || getV(item.author) || "";
             const role = getV(sp.role) || getV(item.role) || "";
-            
+
             return (
               <div
                 key={idx}
@@ -99,10 +105,12 @@ const Testimonials = ({ section: propSection }: TestimonialsProps) => {
               >
                 <div className="p-9 text-center bg-surface/75 border border-border rounded-lg h-full">
                   <p className="font-heading text-[22px] italic mb-[22px] leading-[1.4] font-semibold text-foreground/90">
-                    {quote}
+                    <EditableText value={quote} isEditable={isEditable} onSave={handle(`content.${idx}.props.quote.en`)} tag="span" />
                   </p>
                   <div className="uppercase text-[11px] tracking-[3px] font-black text-foreground/70">
-                    — {author}{role ? `, ${role}` : ""}
+                    &mdash; <EditableText value={author} isEditable={isEditable} onSave={handle(`content.${idx}.props.author.en`)} tag="span" />
+                    {role ? `, ` : ""}
+                    <EditableText value={role} isEditable={isEditable} onSave={handle(`content.${idx}.props.role.en`)} tag="span" />
                   </div>
                 </div>
               </div>

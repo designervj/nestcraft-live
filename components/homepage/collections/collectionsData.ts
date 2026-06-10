@@ -40,7 +40,6 @@ export const defaultCollections = [
     },
   },
 ];
-
 export const defaultCollectionProps = {
   heading: { en: "Our Collections" },
   viewAllLabel: { en: "View All" },
