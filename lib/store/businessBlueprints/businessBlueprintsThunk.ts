@@ -3,13 +3,11 @@ import { BusinessBlueprint } from "./businessBlueprintSlice";
 
 const tenantHeader = process.env.NEXT_PUBLIC_TENANT_ID;
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
 export const fetchBusinessBlueprint = createAsyncThunk(
   "businessblueprint/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const resp = await fetch(`${API_BASE_URL}/platform/business-blueprint`, {
+      const resp = await fetch(`/api/platform/business-blueprint`, {
         headers: {
           "x-tenant-db": tenantHeader || "",
         },
@@ -29,7 +27,7 @@ export const updateBusinessBlueprint = createAsyncThunk(
   "businessblueprint/update",
   async (payload: Partial<BusinessBlueprint>, { rejectWithValue }) => {
     try {
-      const resp = await fetch(`${API_BASE_URL}/platform/business-blueprint`, {
+      const resp = await fetch(`/api/platform/business-blueprint`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

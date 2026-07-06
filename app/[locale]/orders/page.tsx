@@ -41,8 +41,8 @@ export default function OrdersPage() {
   }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchOrders());
+    if (isAuthenticated && user?.id) {
+      dispatch(fetchOrders({ userId: user.id }));
     }
   }, [dispatch, isAuthenticated]);
 
@@ -262,7 +262,7 @@ export default function OrdersPage() {
           </h3>
           <p className="text-sm font-semibold text-rose-700 mb-6">{error}</p>
           <button
-            onClick={() => dispatch(fetchOrders())}
+            onClick={() => dispatch(fetchOrders({ userId: user?.id! }))}
             className="inline-flex items-center justify-center bg-rose-600 text-white px-8 h-12 rounded-full text-[13px] font-bold uppercase tracking-wider hover:bg-rose-700 transition-all"
           >
             Try Again

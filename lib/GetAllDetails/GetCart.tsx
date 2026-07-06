@@ -8,17 +8,17 @@ import { AppDispatch } from "../store/store";
 import { fetchCart } from "../store/cart/cartThunk";
 
 export default function GetCart() {
-  const { items, loading, error, hasCartFetched } = useSelector(
-    (state: RootState) => state.cart,
+  const { hasCartFetched } = useSelector((state: RootState) => state.cart);
+
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
   );
 
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (!hasCartFetched) {
-      dispatch(fetchCart());
-    }
-  }, []);
+    dispatch(fetchCart());
+  }, [isAuthenticated]);
 
   return null;
 }

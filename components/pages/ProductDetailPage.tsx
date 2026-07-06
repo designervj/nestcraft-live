@@ -649,12 +649,17 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
     const primaryImg = currentProduct.gallery?.find(
       (img: any) => img.id === currentProduct.primaryImageId,
     );
-    return primaryImg?.url || currentProduct.gallery?.[0]?.url || "/assets/Image/Sofa.jpg";
+    return (
+      primaryImg?.url ||
+      currentProduct.gallery?.[0]?.url ||
+      "/assets/Image/Sofa.jpg"
+    );
   }, [currentProduct]);
 
   // Get all gallery images
   const galleryImages = useMemo(() => {
-    if (!currentProduct?.gallery || currentProduct.gallery.length === 0) return ["/assets/Image/Sofa.jpg"];
+    if (!currentProduct?.gallery || currentProduct.gallery.length === 0)
+      return ["/assets/Image/Sofa.jpg"];
     return currentProduct.gallery.map((img: any) => img.url);
   }, [currentProduct]);
 
@@ -738,7 +743,7 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
       setSelectedVariant(matchingVariant);
       if (matchingVariant.imageId && currentProduct?.gallery) {
         const imgIndex = currentProduct.gallery.findIndex(
-          (img: any) => img.id === matchingVariant.imageId
+          (img: any) => img.id === matchingVariant.imageId,
         );
         if (imgIndex !== -1) {
           setSelectedImage(imgIndex);
@@ -815,7 +820,7 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
 
   const handleAddToCart = () => {
     const variantKey = composeVariantKey(selectedOptions || {});
-    const cartItemId = `${currentProduct._id}-${variantKey}`;
+    const cartItemId = `${currentProduct.id}-${variantKey}`;
 
     const productToAdd = {
       ...currentProduct,

@@ -127,18 +127,15 @@ export const updateProfileThunk = createAsyncThunk(
     try {
       const { auth } = getState() as any;
 
-      const response = await fetch(
-        `/api/auth/update-profile`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "x-tenant-db": tenantHeader || "",
-          },
-          credentials: "include",
-          body: JSON.stringify({ ...userData, id: auth.user.id }),
+      const response = await fetch(`/api/auth/update-profile`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-tenant-db": tenantHeader || "",
         },
-      );
+        credentials: "include",
+        body: JSON.stringify({ ...userData, id: auth.user.id }),
+      });
 
       const data = await response.json();
 
@@ -152,4 +149,3 @@ export const updateProfileThunk = createAsyncThunk(
     }
   },
 );
-
