@@ -3,14 +3,14 @@ import { getOrders, getOrderById } from "@/lib/services/orders";
 
 export const fetchOrders = createAsyncThunk(
   "orders/fetchOrders",
-  async (_, { rejectWithValue }) => {
+  async ({ userId }: { userId: string }, { rejectWithValue }) => {
     try {
-      const orders = await getOrders();
+      const orders = await getOrders(userId);
       return orders;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch orders");
     }
-  }
+  },
 );
 
 export const fetchOrderById = createAsyncThunk(
@@ -22,5 +22,5 @@ export const fetchOrderById = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch order details");
     }
-  }
+  },
 );

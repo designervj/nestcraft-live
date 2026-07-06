@@ -78,8 +78,12 @@ export const getOrderId = (order: Order): string => {
 /**
  * Fetch all orders for the currently logged-in user
  */
-export async function getOrders(): Promise<Order[]> {
-  const response = await fetch("/api/commerce/orders", {
+export async function getOrders(userId?: string): Promise<Order[]> {
+  const params = new URLSearchParams();
+  if (userId) {
+    params.append("user_id", userId);
+  }
+  const response = await fetch(`/api/commerce/orders?${params.toString()}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

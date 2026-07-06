@@ -4,22 +4,22 @@
 // const TENANT_DB_NAME = process.env.TENANT_DB_NAME;
 
 // export async function proxyRequest(
-//   req: NextRequest, 
+//   req: NextRequest,
 //   targetPath: string,
 //   options: { addApiPrefix?: boolean } = {}
 // ) {
 //   const searchParams = req.nextUrl.searchParams.toString();
 //   const baseBackendUrl = options.addApiPrefix ? `${FASTAPI_URL}/api` : FASTAPI_URL;
 //   const url = `${baseBackendUrl}/${targetPath}${searchParams ? `?${searchParams}` : ""}`;
-  
+
 //   const headers = new Headers();
-  
+
 //   // Forward relevant headers
 //   const headersToForward = [
-//     "authorization", 
-//     "cookie", 
-//     "content-type", 
-//     "x-tenant-db", 
+//     "authorization",
+//     "cookie",
+//     "content-type",
+//     "x-tenant-db",
 //     "accept",
 //     "tenant-slug",
 //     "tenant_slug",
@@ -60,7 +60,7 @@
 //   try {
 //     console.log(`[Proxy] ${req.method} ${req.nextUrl.pathname} -> ${url}`);
 //     const response = await fetch(url, fetchOptions);
-    
+
 //     // Check if response is JSON
 //     const contentType = response.headers.get("content-type");
 //     if (contentType?.includes("application/json")) {
@@ -68,7 +68,7 @@
 //       return NextResponse.json(data, { status: response.status });
 //     } else {
 //       const text = await response.text();
-//       return new NextResponse(text, { 
+//       return new NextResponse(text, {
 //         status: response.status,
 //         headers: { "Content-Type": contentType || "text/plain" }
 //       });
@@ -76,7 +76,7 @@
 //   } catch (error) {
 //     console.error(`[Proxy Error] ${url}:`, error);
 //     return NextResponse.json(
-//       { success: false, error: "Failed to connect to backend service" }, 
+//       { success: false, error: "Failed to connect to backend service" },
 //       { status: 500 }
 //     );
 //   }
@@ -90,10 +90,12 @@ const TENANT_DB_NAME = process.env.TENANT_DB_NAME;
 export async function proxyRequest(
   req: NextRequest,
   targetPath: string,
-  options: { addApiPrefix?: boolean } = {}
+  options: { addApiPrefix?: boolean } = {},
 ) {
   const searchParams = req.nextUrl.searchParams.toString();
-  const baseBackendUrl = options.addApiPrefix ? `${FASTAPI_URL}/api` : FASTAPI_URL;
+  const baseBackendUrl = options.addApiPrefix
+    ? `${FASTAPI_URL}/api`
+    : FASTAPI_URL;
   const url = `${baseBackendUrl}/${targetPath}${searchParams ? `?${searchParams}` : ""}`;
 
   const headers = new Headers();
@@ -166,8 +168,51 @@ export async function proxyRequest(
           ? [response.headers.get("set-cookie")!]
           : [];
 
+    const isSecureRequest =
+      req.nextUrl.protocol === "https:" ||
+      req.headers.get("x-forwarded-proto") === "https";
+
     setCookies.forEach((cookie) => {
-      nextResponse.headers.append("set-cookie", cookie);
+      const parts = cookie.split(";").map((p) => p.trim());
+      const [nameValue, ...attrParts] = parts;
+      if (!nameValue) return;
+
+      const eqIndex = nameValue.indexOf("=");
+      if (eqIndex === -1) return;
+
+      const name = nameValue.substring(0, eqIndex);
+      const value = nameValue.substring(eqIndex + 1);
+
+      const options: any = {
+        path: "/",
+      };
+
+      attrParts.forEach((attr) => {
+        const lowerAttr = attr.toLowerCase();
+        if (lowerAttr.startsWith("max-age=")) {
+          options.maxAge = parseInt(attr.substring(8), 10);
+        } else if (lowerAttr.startsWith("path=")) {
+          options.path = attr.substring(5);
+        } else if (lowerAttr === "httponly") {
+          options.httpOnly = true;
+        } else if (lowerAttr === "secure") {
+          options.secure = true;
+        } else if (lowerAttr.startsWith("samesite=")) {
+          const sameSiteValue = attr.substring(9).toLowerCase();
+          if (sameSiteValue === "lax") options.sameSite = "lax";
+          else if (sameSiteValue === "strict") options.sameSite = "strict";
+          else if (sameSiteValue === "none") options.sameSite = "none";
+        }
+      });
+
+      if (!isSecureRequest) {
+        options.secure = false;
+        if (options.sameSite === "none") {
+          options.sameSite = "lax";
+        }
+      }
+
+      nextResponse.cookies.set(name, value, options);
     });
 
     return nextResponse;
@@ -175,7 +220,7 @@ export async function proxyRequest(
     console.error(`[Proxy Error] ${url}:`, error);
     return NextResponse.json(
       { success: false, error: "Failed to connect to backend service" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

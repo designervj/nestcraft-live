@@ -117,8 +117,6 @@ function CategoriesPageContent() {
 
   const dispatch = useAppDispatch();
 
-  console.log(form);
-
   const resetForm = () => {
     setForm(createDraft(typeFilter || "product"));
     setEditingId(null);
@@ -360,7 +358,8 @@ function CategoriesPageContent() {
             Category <span className="text-primary">Taxonomy</span>
           </h1>
           <p className="text-xs text-slate-400 font-black uppercase tracking-[0.2em] flex items-center gap-2">
-            <Database size={14} className="text-primary" /> System hierarchy for asset categorization and navigation.
+            <Database size={14} className="text-primary" /> System hierarchy for
+            asset categorization and navigation.
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -431,7 +430,7 @@ function CategoriesPageContent() {
       {showForm && (
         <div className="bg-white border-l-[6px] border-primary p-12 space-y-12 shadow-xl rounded-none animate-in slide-in-from-top-6 duration-700 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-none -translate-y-32 translate-x-32" />
-          
+
           <div className="flex items-center justify-between relative z-10">
             <div className="flex items-center gap-6">
               <div className="h-16 w-16 bg-slate-50 border border-slate-100 rounded-none flex items-center justify-center text-primary shadow-inner">
@@ -439,9 +438,7 @@ function CategoriesPageContent() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-2xl font-heading font-black text-slate-900 uppercase tracking-tight">
-                  {editingId
-                    ? "Modify Category Hub"
-                    : "Add New Category"}
+                  {editingId ? "Modify Category Hub" : "Add New Category"}
                 </h3>
                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] leading-relaxed">
                   Configure hierarchical structure and platform visibility.
@@ -703,7 +700,7 @@ function CategoriesPageContent() {
         <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
           <FolderTree size={200} className="text-primary" />
         </div>
-        
+
         <Table>
           <TableHeader className="bg-slate-50/50 border-b border-slate-100">
             <TableRow className="hover:bg-transparent border-none h-20">
@@ -755,7 +752,8 @@ function CategoriesPageContent() {
       <div className="flex items-center gap-5 p-8 bg-white border border-slate-100 rounded-none shadow-sm">
         <Terminal size={18} className="text-primary" />
         <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">
-          Platform Hierarchy Status: Optimized | Core Sync: Active | Access: Admin Level-4
+          Platform Hierarchy Status: Optimized | Core Sync: Active | Access:
+          Admin Level-4
         </span>
       </div>
 
