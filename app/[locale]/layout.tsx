@@ -15,6 +15,7 @@ import GetUser from "@/lib/GetAllDetails/GetUser";
 import { Inter } from "next/font/google";
 import FetchAllData from "@/components/pages/FetchAllData";
 import EditModeToggle from "@/components/EditModeToggle/EditModeToggle";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -69,6 +70,7 @@ export default async function LocaleLayout({
               {children}
             </LayoutWrapper>
             <EditModeToggle />
+            <Toaster richColors />
           </Providers>
         </StoreProvider>
       </body>
