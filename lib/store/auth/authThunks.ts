@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-const tenantHeader = process.env.NEXT_PUBLIC_TENANT_ID;
+const tenantHeader = process.env.TENANT_DB_NAME;
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const loginThunk = createAsyncThunk(
@@ -20,7 +20,7 @@ export const loginThunk = createAsyncThunk(
       const data = await response.json();
 
       if (!response.ok) {
-        return rejectWithValue(data.message || "Authentication failed");
+        return rejectWithValue(data.detail || data.message || "Authentication failed");
       }
 
       return {
@@ -49,7 +49,7 @@ export const getUserThunk = createAsyncThunk(
       const data = await response.json();
 
       if (!response.ok) {
-        return rejectWithValue(data.message || "Authentication failed");
+        return rejectWithValue(data.detail || data.message || "Authentication failed");
       }
       return {
         status: response.status,
@@ -77,7 +77,7 @@ export const logoutThunk = createAsyncThunk(
       const data = await response.json();
 
       if (!response.ok) {
-        return rejectWithValue(data.message || "Authentication failed");
+        return rejectWithValue(data.detail || data.message || "Authentication failed");
       }
       return data;
     } catch (error: any) {
@@ -94,15 +94,16 @@ export const signupThunk = createAsyncThunk(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-tenant-db": tenantHeader || "",
+          "x-tenant-db": tenantHeader || "kp_nestcraft",
         },
         body: JSON.stringify(userData),
       });
-
+      console.log("response -sign ",response)
+      
       const data = await response.json();
-
+        console.log("data sign up",data)
       if (!response.ok) {
-        return rejectWithValue(data.message || "Registration failed");
+        return rejectWithValue(data.detail || data.message || "Registration failed");
       }
 
       return data;
@@ -140,7 +141,7 @@ export const updateProfileThunk = createAsyncThunk(
       const data = await response.json();
 
       if (!response.ok) {
-        return rejectWithValue(data.message || "Profile update failed");
+        return rejectWithValue(data.detail || data.message || "Profile update failed");
       }
 
       return data.user;

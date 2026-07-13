@@ -7,14 +7,16 @@ import { AppDispatch } from "@/lib/store/store";
 import { signupThunk } from "@/lib/store/auth/authThunks";
 import { toast } from "sonner";
 import Link from "next/link";
-import { User, Mail, Lock, ArrowRight } from "lucide-react";
+import { User, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { useAppSelector } from "@/lib/store/hooks";
+import { setCredentials } from "@/lib/store/auth/authSlice";
 
 export default function SignupPageClient() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
@@ -35,13 +37,18 @@ export default function SignupPageClient() {
           role:"customer"
         }),
       ).unwrap();
-
-      if (res.access_token) {
+       console.log("sign up--", res)
+      if (res.session) {
+        dispatch(setCredentials({ user: res.session }));
         toast.success("Account created successfully! Welcome to the family.");
-        router.push("/login");
+        router.push("/");
       }
     } catch (err: any) {
-      toast.error(err || "Registration error: Account could not be created.");
+      console.log("errriiii", err);
+      const errorMessage = typeof err === "string"
+        ? err
+        : err?.detail || err?.message || "Registration error: Account could not be created.";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -140,13 +147,21 @@ export default function SignupPageClient() {
                     <Lock size={18} />
                   </div>
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full flex h-11 rounded-xl border border-border bg-slate-50 pl-11 pr-4 text-sm font-medium text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-[#0d6533]/20 focus:border-[#0d6533] shadow-sm"
+                    className="w-full flex h-11 rounded-xl border border-border bg-slate-50 pl-11 pr-12 text-sm font-medium text-slate-900 transition-all focus:outline-none focus:ring-2 focus:ring-[#0d6533]/20 focus:border-[#0d6533] shadow-sm"
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-foreground hover:text-[#0d6533] transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
             </div>
