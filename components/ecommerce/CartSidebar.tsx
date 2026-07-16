@@ -61,7 +61,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-[100]"
+            className="fixed inset-0 bg-black/50 z-[1999]"
           />
 
           {/* Sidebar */}
@@ -70,7 +70,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 w-full max-w-[400px] bg-surface z-[101] flex flex-col shadow-2xl border-l border-border"
+            className="fixed inset-y-0 right-0 w-full max-w-[400px] bg-surface z-[2000] flex flex-col shadow-2xl border-l border-border"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
@@ -85,26 +85,6 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
               </button>
             </div>
 
-            {/* Free Shipping Bar */}
-            <div className="p-6 bg-muted/5 border-b border-border space-y-4">
-              <div className="relative h-2 w-full bg-border rounded-full overflow-visible">
-                <div
-                  className="absolute top-0 left-0 h-full bg-emerald-600 rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
-                />
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 rounded-full border-2 border-emerald-600 bg-surface text-emerald-600 transition-all duration-500"
-                  style={{ left: `calc(${progress}% - 16px)` }}
-                >
-                  <Truck size={14} />
-                </div>
-              </div>
-              <p className="text-sm font-medium text-muted mt-2">
-                {isFreeShipping
-                  ? "Congratulations! You've got free shipping!"
-                  : `Spend Rs. ${(freeShippingThreshold - cartTotal).toLocaleString("en-IN")} more for free shipping`}
-              </p>
-            </div>
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">

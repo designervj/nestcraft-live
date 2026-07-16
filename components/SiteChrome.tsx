@@ -7,6 +7,7 @@ import {
   Moon,
   Sun,
   Menu,
+  Home,
   X,
   ArrowUp,
   Instagram,
@@ -56,6 +57,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import CartSidebar from "./ecommerce/CartSidebar";
 
 // --- Types ---
 export type MegaMenuLink = { title: string; href: string };
@@ -95,12 +97,14 @@ const Header = ({
   onSearchOpen,
   logoUrl,
   companyName,
+  setIsCartSidebarOpen,
 }: {
   theme: string;
   toggleTheme: () => void;
   onSearchOpen: () => void;
   logoUrl?: string;
   companyName?: string;
+  setIsCartSidebarOpen: (val: boolean) => void;
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeMegaTab, setActiveMegaTab] = useState<string | null>(null);
@@ -275,7 +279,7 @@ const Header = ({
             </button>
             <Link
               href="/shop"
-              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
+              className={`hidden sm:flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
             >
               <Store size={20} strokeWidth={1.5} />
               <span className="text-[15px] font-normal hidden sm:block">
@@ -315,7 +319,7 @@ const Header = ({
             {isAuthenticated && (
               <Link
                 href="/wishlist"
-                className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
+                className={`hidden sm:flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
               >
                 <div className="relative">
                   <Heart size={20} strokeWidth={1.5} />
@@ -334,9 +338,9 @@ const Header = ({
             )}
 
             {/* Cart */}
-            <Link
-              href="/cart"
-              className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
+            <button
+              onClick={() => setIsCartSidebarOpen(true)}
+              className={`flex items-center gap-2 transition-colors cursor-pointer outline-none ${textColor} ${hoverColor}`}
             >
               <div className="relative">
                 <ShoppingCart size={20} strokeWidth={1.5} />
@@ -349,10 +353,11 @@ const Header = ({
               <span className="text-[15px] font-normal hidden lg:block">
                 Cart
               </span>
-            </Link>
+            </button>
 
             {/* Dropdown Button / Login Link */}
             {isAuthenticated ? (
+              <div className="hidden sm:block">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
@@ -409,16 +414,17 @@ const Header = ({
                     <LogOut size={16} strokeWidth={1.5} />
                     Logout
                   </DropdownMenuItem>
-                </DropdownMenuContent>
+                  </DropdownMenuContent>
               </DropdownMenu>
+              </div>
             ) : (
               <Link
                 href="/login"
-                className={`flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
+                className={`hidden sm:flex items-center gap-2 transition-colors ${textColor} ${hoverColor}`}
               >
                 <User size={20} strokeWidth={1.5} />
                 <span className="text-[15px] font-normal hidden lg:block">
-                  Login
+                  Login / Signup
                 </span>
               </Link>
             )}
@@ -671,17 +677,20 @@ const SearchOverlay = ({
     if (isOpen && inputRef.current) inputRef.current.focus();
   }, [isOpen]);
 
+  const { allProducts } = useAppSelector((state) => state.adminProducts);
+
   const filteredProducts =
     query.length > 1
-      ? products.filter(
+      ? allProducts.filter(
           (p) =>
-            p.title.toLowerCase().includes(query.toLowerCase()) ||
-            p.category.toLowerCase().includes(query.toLowerCase()),
+            p.name.toLowerCase().includes(query.toLowerCase()) ||
+            p.type.toLowerCase().includes(query.toLowerCase()),
         )
       : [];
 
-  const handleSelect = (id: number) => {
-    router.push(`/product/${id}`);
+  const handleSelect = (product: any) => {
+    const identifier = product.slug || product._id || product.id;
+    router.push(`/product/${identifier}`);
     onClose();
     setQuery("");
   };
@@ -716,6 +725,45 @@ const SearchOverlay = ({
                 className="h-16 w-full rounded-[24px] border border-border bg-surface pl-12 pr-4 text-lg font-bold outline-none transition-all placeholder:text-black/70 focus:border-secondary sm:h-20 sm:pl-16 sm:pr-8 sm:text-2xl"
               />
             </div>
+
+            {/* Display Dynamic Search Results */}
+            {query.length > 1 && (
+              <div className="max-h-[60vh] overflow-y-auto rounded-2xl bg-surface p-4 shadow-xl border border-border">
+                {filteredProducts.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {filteredProducts.map((product) => {
+                      const image = product.gallery?.[0]?.url || product.primaryImageId || "/assets/Image/nestcraft-logo.svg";
+                      const price = product.pricing?.price || product.price || "0";
+                      
+                      return (
+                        <button
+                          key={product._id || product.id}
+                          onClick={() => handleSelect(product)}
+                          className="flex items-center gap-4 rounded-xl p-3 text-left transition-colors hover:bg-secondary/10"
+                        >
+                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-muted">
+                            <img
+                              src={image}
+                              alt={product.name}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-foreground line-clamp-1">{product.name}</h4>
+                            <p className="text-sm text-muted">{product.type}</p>
+                            <p className="mt-1 font-medium text-secondary">₹{price}</p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="py-8 text-center text-muted">
+                    No products found matching "{query}"
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       )}
@@ -941,14 +989,21 @@ export default function SiteChrome({
 
   const companyName = brandConfig?.companyInfo?.name || "NestCraft";
 
+  const cartCount = useAppSelector(selectCartCount);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const wishlistCount = (user && user?.wishlist && user.wishlist.length) || 0;
+
+  const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col pb-16 sm:pb-0">
       <Header
         theme={theme}
         toggleTheme={toggleTheme}
         onSearchOpen={() => setIsSearchOpen(true)}
         logoUrl={primaryLogo}
         companyName={companyName}
+        setIsCartSidebarOpen={setIsCartSidebarOpen}
       />
       <SearchOverlay
         isOpen={isSearchOpen}
@@ -960,6 +1015,50 @@ export default function SiteChrome({
         companyName={companyName}
         brandConfig={brandConfig}
       />
+
+      {/* Mobile Bottom Navigation Bar */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 h-16 bg-background border-t border-border z-[1300] flex justify-around items-center px-2">
+        <Link href="/" className="flex flex-col items-center justify-center gap-1 w-16 text-muted hover:text-foreground">
+          <Home size={20} strokeWidth={1.5} />
+          <span className="text-[10px] font-bold">Home</span>
+        </Link>
+
+        <Link href={isAuthenticated ? "/account" : "/login"} className="flex flex-col items-center justify-center gap-1 w-16 text-muted hover:text-foreground">
+          <User size={20} strokeWidth={1.5} />
+          <span className="text-[10px] font-bold">Account</span>
+        </Link>
+
+        <Link href="/shop" className="flex flex-col items-center justify-center gap-1 w-16 text-muted hover:text-foreground">
+          <Store size={20} strokeWidth={1.5} />
+          <span className="text-[10px] font-bold">Shop</span>
+        </Link>
+
+        <Link href="/wishlist" className="relative flex flex-col items-center justify-center gap-1 w-16 text-muted hover:text-foreground">
+          <div className="relative">
+            <Heart size={20} strokeWidth={1.5} />
+            {wishlistCount > 0 && (
+              <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#E5484D] text-[9px] font-bold text-white">
+                {wishlistCount}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-bold">Wishlist</span>
+        </Link>
+
+        <Link href="/cart" className="relative flex flex-col items-center justify-center gap-1 w-16 text-muted hover:text-foreground">
+          <div className="relative">
+            <ShoppingCart size={20} strokeWidth={1.5} />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#E5484D] text-[9px] font-bold text-white">
+                {cartCount}
+              </span>
+            )}
+          </div>
+          <span className="text-[10px] font-bold">Cart</span>
+        </Link>
+      </div>
+
+      <CartSidebar isOpen={isCartSidebarOpen} onClose={() => setIsCartSidebarOpen(false)} />
     </div>
   );
 }

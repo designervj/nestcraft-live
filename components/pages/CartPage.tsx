@@ -3,7 +3,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAppSelector, useAppDispatch } from "../../lib/store/hooks";
-import { selectCartTotal } from "../../lib/store/cart/cartSlice";
+import { selectCartTotal, selectShippingCost } from "../../lib/store/cart/cartSlice";
 import {
   removeFromCartAsync,
   updateQuantityAsync,
@@ -28,6 +28,7 @@ const CartPage = () => {
     (state: RootState) => state.cart,
   );
   const cartTotal = useAppSelector(selectCartTotal);
+  const shippingCost = useAppSelector(selectShippingCost);
   const dispatch = useAppDispatch();
 
   const formatPrice = (price: number) => {
@@ -90,20 +91,20 @@ const CartPage = () => {
   }
 
   return (
-    <div className="pb-24 pt-12 px-[5%] max-w-7xl mx-auto">
-      <div className="flex items-center gap-4 mb-12">
+    <div className="pb-24 pt-8 md:pt-12 px-[5%] max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8 md:mb-12">
         <Link
           href="/shop"
-          className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-surface transition-colors"
+          className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:bg-surface transition-colors shrink-0"
         >
           <ChevronLeft size={20} />
         </Link>
-        <h1 className="text-[42px] font-bold tracking-tight">Shopping Cart</h1>
+        <h1 className="text-3xl md:text-[42px] font-bold tracking-tight">Shopping Cart</h1>
       </div>
 
-      <div className="grid lg:grid-cols-[1fr_400px] gap-16 items-start">
+      <div className="grid lg:grid-cols-[1fr_400px] gap-8 md:gap-16 items-start">
         {/* Cart Items */}
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
           <AnimatePresence mode="popLayout">
             {cart.map((item) => {
               const variantImageId = item.selectedVariant?.imageId;
@@ -121,9 +122,9 @@ const CartPage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="flex gap-6 pb-8 border-b border-border group"
+                  className="flex flex-col sm:flex-row gap-4 sm:gap-6 pb-6 md:pb-8 border-b border-border group"
                 >
-                  <div className="w-32 h-40 bg-surface rounded-2xl overflow-hidden border border-border flex-shrink-0">
+                  <div className="w-full sm:w-32 h-48 sm:h-40 bg-surface rounded-2xl overflow-hidden border border-border flex-shrink-0">
                     <img
                       src={imageUrl}
                       alt={alt}
@@ -134,7 +135,7 @@ const CartPage = () => {
                   <div className="flex-grow flex flex-col justify-between py-1">
                     <div>
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-bold tracking-tight group-hover:text-secondary transition-colors">
+                        <h3 className="text-lg md:text-xl font-bold tracking-tight group-hover:text-secondary transition-colors pr-2">
                           <Link href={`/product/${item._id}`}>{item.name}</Link>
                         </h3>
                         <button
@@ -143,12 +144,12 @@ const CartPage = () => {
                               removeFromCartAsync(String(item.cartItemId)),
                             )
                           }
-                          className="text-muted hover:text-red-500 transition-colors p-1"
+                          className="text-muted hover:text-red-500 transition-colors p-1 shrink-0"
                         >
                           <Trash2 size={18} />
                         </button>
                       </div>
-                      <p className="text-sm text-muted font-bold uppercase tracking-wider mb-2">
+                      <p className="text-xs md:text-sm text-muted font-bold uppercase tracking-wider mb-2">
                         {item.primaryCategoryId}
                       </p>
                       {item.selectedOptions &&
@@ -166,7 +167,7 @@ const CartPage = () => {
                             )}
                           </div>
                         )}
-                      <p className="text-lg font-black text-secondary">
+                      <p className="text-base md:text-lg font-black text-secondary mb-4 sm:mb-0">
                         {item.selectedVariant?.price
                           ? formatPrice(Number(item.selectedVariant.price))
                           : item.price || ""}
@@ -230,7 +231,9 @@ const CartPage = () => {
             </div>
             <div className="flex justify-between text-muted font-semibold">
               <span>Shipping</span>
-              <span className="text-emerald-600">Free</span>
+              <span>
+                {shippingCost === 0 ? "Free" : formatPrice(shippingCost)}
+              </span>
             </div>
             <div className="flex justify-between text-muted font-semibold">
               <span>Tax (GST 18%)</span>
@@ -240,7 +243,7 @@ const CartPage = () => {
             <div className="flex justify-between text-xl font-black">
               <span>Total</span>
               <span className="text-secondary">
-                {formatPrice(cartTotal * 1.18)}
+                {formatPrice(cartTotal * 1.18 + shippingCost)}
               </span>
             </div>
           </div>
@@ -260,22 +263,22 @@ const CartPage = () => {
 
       {/* Features Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20 pt-16 border-t border-border/40">
-        <div className="bg-[#f6f6f6] rounded-2xl p-8 flex flex-col items-center text-center">
-          <MessageCircleQuestion size={24} className="mb-4 text-foreground/80" strokeWidth={1.75} />
+        <div className="bg-surface border border-border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl p-8 flex flex-col items-center text-center group cursor-default">
+          <MessageCircleQuestion size={24} className="mb-4 text-foreground/80 group-hover:text-foreground transition-colors" strokeWidth={1.75} />
           <h3 className="font-bold font-sans text-[16px] mb-2">Have Questions?</h3>
           <p className="text-muted text-[14px] font-medium leading-relaxed px-4">
             Our experts are here to help! Call us free.
           </p>
         </div>
-        <div className="bg-[#f6f6f6] rounded-2xl p-8 flex flex-col items-center text-center">
-          <ShieldCheck size={24} className="mb-4 text-foreground/80" strokeWidth={1.75} />
+        <div className="bg-surface border border-border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl p-8 flex flex-col items-center text-center group cursor-default">
+          <ShieldCheck size={24} className="mb-4 text-foreground/80 group-hover:text-foreground transition-colors" strokeWidth={1.75} />
           <h3 className="font-bold font-sans text-[16px] mb-2">Secure Shopping</h3>
           <p className="text-muted text-[14px] font-medium leading-relaxed px-4">
             All transactions are protected by SSL technology.
           </p>
         </div>
-        <div className="bg-[#f6f6f6] rounded-2xl p-8 flex flex-col items-center text-center">
-          <CheckCircle2 size={24} className="mb-4 text-foreground/80" strokeWidth={1.75} />
+        <div className="bg-surface border border-border shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl p-8 flex flex-col items-center text-center group cursor-default">
+          <CheckCircle2 size={24} className="mb-4 text-foreground/80 group-hover:text-foreground transition-colors" strokeWidth={1.75} />
           <h3 className="font-bold font-sans text-[16px] mb-2">Privacy Protection</h3>
           <p className="text-muted text-[14px] font-medium leading-relaxed px-4">
             Your privacy is always our top priority.

@@ -664,20 +664,32 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
   >(() => getDefaultOptions(currentProduct));
   const dispatch = useAppDispatch();
 
-  const [soldCount, setSoldCount] = useState(12);
-  const [soldHours, setSoldHours] = useState(18);
-  const [viewingCount, setViewingCount] = useState(15);
   const [isAskQuestionOpen, setIsAskQuestionOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
-  const [leftInStock, setLeftInStock] = useState(10);
 
-  useEffect(() => {
-    setSoldCount(Math.floor(Math.random() * 30) + 5);
-    setSoldHours(Math.floor(Math.random() * 24) + 1);
-    setViewingCount(Math.floor(Math.random() * 40) + 10);
-    setLeftInStock(Math.floor(Math.random() * 12) + 3);
-  }, []);
+  const productIdStr = String(currentProduct?._id || currentProduct?.id || "default");
+
+  const getDeterministicRandom = (str: string, min: number, max: number) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = (str.charCodeAt(i) + ((hash << 5) - hash)) | 0;
+    }
+    const normalized = Math.abs(hash) / 2147483648;
+    return Math.floor(normalized * (max - min + 1)) + min;
+  };
+
+  const soldCount = useMemo(() => getDeterministicRandom(productIdStr + "sold", 5, 35), [productIdStr]);
+  const soldHours = useMemo(() => getDeterministicRandom(productIdStr + "hours", 1, 24), [productIdStr]);
+  const viewingCount = useMemo(() => getDeterministicRandom(productIdStr + "view", 10, 50), [productIdStr]);
+  
+  const leftInStock = useMemo(() => {
+    if (selectedVariant?.stock) {
+      const stock = parseInt(selectedVariant.stock);
+      if (!isNaN(stock) && stock > 0) return stock;
+    }
+    return getDeterministicRandom(productIdStr + "stock", 3, 15);
+  }, [selectedVariant, productIdStr]);
 
   // Get primary image URL
   const primaryImage = useMemo(() => {
@@ -968,9 +980,7 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
               </div>
             </div>
 
-            <div className="text-[15px] font-bold text-foreground">
-              Customer Care: +916395463874
-            </div>
+         
 
             <div className="inline-flex items-center gap-3 mt-4 text-sm font-bold text-foreground">
               <div className="bg-black text-white p-1.5 rounded flex items-center justify-center">
@@ -986,24 +996,24 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
             )}
           </div>
 
-          <p className="text-muted font-medium leading-relaxed text-[15px]">
+          <p className="text-muted font-medium leading-relaxed text-[15px] line-clamp-3">
             {currentProduct.description}
           </p>
 
           {/* Variant Options ONLY */}
           {variantOptions.length > 0 && (
-            <div className="space-y-6 py-6 border-y border-border/60">
+            <div className="space-y-6 py-4 border-y border-border/60">
               {variantOptions.map((option: any) => (
                 <div key={option.key} className="space-y-3">
-                  <label className="text-[11px] font-black uppercase tracking-[2px] text-foreground/70">
+                  <label className="text-[11px] mb-4  font-black uppercase tracking-[2px] text-foreground/70">
                     Select {option.label}
                   </label>
-                  <div className="flex flex-wrap gap-2.5">
+                  <div className="flex flex-wrap gap-2.5 mt-3">
                     {option.selectedValues.map((value: string) => (
                       <button
                         key={value}
                         onClick={() => handleOptionChange(option.key, value)}
-                        className={`h-11 px-6 rounded-xl border font-black text-[13px] transition-all ${
+                        className={`h-11 px-6 cursor-pointer rounded-xl border font-black text-[13px] transition-all ${
                           selectedOptions[option.key] === value
                             ? "border-secondary bg-secondary/10 text-secondary"
                             : "border-border hover:border-secondary/40"
@@ -1020,27 +1030,29 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
 
           {/* Actions */}
           {/* Compare, Ask, Share */}
-          <div className="flex items-center gap-4 py-2 flex-wrap">
+          <div className="flex items-center  gap-4 py-2 flex-wrap ">
         
             <button
               onClick={() => setIsAskQuestionOpen(true)}
-              className="flex items-center gap-2 text-sm font-bold text-muted hover:text-foreground transition-colors"
+              className="flex cursor-pointer items-center gap-2 text-sm font-bold text-muted hover:text-foreground transition-colors border-r border-border/60 pr-4"
             >
               <HelpCircle size={16} /> Ask a question
             </button>
             <button
               onClick={() => setIsShareOpen(true)}
-              className="flex items-center gap-2 text-sm font-bold text-muted hover:text-foreground transition-colors"
+              className="flex cursor-pointer items-center gap-2 text-sm font-bold text-muted hover:text-foreground transition-colors"
             >
               <Share2 size={16} /> Share
             </button>
           </div>
 
           {/* Hurry up */}
-          <div className="flex items-center gap-2 text-[15px] font-bold text-foreground mb-4">
-            <Flame size={18} className="text-orange-500" />
-            Hurry up! Only <span className="text-red-500">{leftInStock} item(s)</span> items left in stock
-          </div>
+          {leftInStock < 5 && (
+            <div className="flex items-center gap-2 text-[15px] font-bold text-foreground mb-4">
+              <Flame size={18} className="text-orange-500" />
+              Hurry up! Only <span className="text-red-500">{leftInStock} item(s)</span> items left in stock
+            </div>
+          )}
 
           <div className="flex gap-4">
             <div className="flex items-center h-14 rounded-full border border-border bg-surface px-2">
@@ -1063,7 +1075,7 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
             <button
               onClick={handleAddToCart}
               disabled={stockStatus.text === "Out of Stock"}
-              className={`flex-1 h-14 rounded-full text-xs font-black uppercase tracking-[2px] shadow-lg transition-all flex items-center justify-center gap-2 ${
+              className={`flex-1 h-14 cursor-pointer rounded-full text-xs font-black uppercase tracking-[2px] shadow-lg transition-all flex items-center justify-center gap-2 ${
                 stockStatus.text === "Out of Stock"
                   ? "bg-muted text-muted-foreground cursor-not-allowed"
                   : isAdded
@@ -1385,13 +1397,39 @@ const ProductDetailPage = ({ currentProduct }: { currentProduct: any }) => {
               <div>
                 <p className="font-bold mb-3">Share:</p>
                 <div className="flex gap-3">
-                  <button className="w-12 h-12 rounded-full border border-border flex items-center justify-center hover:border-black transition-colors">
+                  <button 
+                    onClick={() => {
+                      const url = window.location.href;
+                      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+                    }}
+                    className="w-12 h-12 cursor-pointer rounded-full border border-border flex items-center justify-center hover:border-black hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  >
                     <Facebook size={18} />
                   </button>
-                  <button className="w-12 h-12 rounded-full border border-border flex items-center justify-center hover:border-black transition-colors">
+                  <button 
+                    onClick={() => {
+                      const url = window.location.href;
+                      const title = currentProduct?.name || 'Check out this product!';
+                      window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title)}`, '_blank');
+                    }}
+                    className="w-12 h-12 cursor-pointer rounded-full border border-border flex items-center justify-center hover:border-black hover:bg-sky-50 hover:text-sky-500 transition-colors"
+                  >
                     <Twitter size={18} />
                   </button>
-                  <button className="w-12 h-12 rounded-full border border-border flex items-center justify-center hover:border-black transition-colors">
+                  <button 
+                    onClick={async () => {
+                      const url = window.location.href;
+                      const title = currentProduct?.name || 'Check out this product!';
+                      if (navigator.share) {
+                        try {
+                          await navigator.share({ title, url });
+                        } catch (err) {}
+                      } else {
+                        navigator.clipboard.writeText(url);
+                      }
+                    }}
+                    className="w-12 h-12 cursor-pointer rounded-full border border-border flex items-center justify-center hover:border-black hover:bg-gray-100 transition-colors"
+                  >
                     <Share2 size={18} />
                   </button>
                 </div>

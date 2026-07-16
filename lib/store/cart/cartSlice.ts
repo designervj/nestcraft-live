@@ -169,6 +169,11 @@ export const selectCartTotal = (state: { cart: CartState }) =>
     }
   }, 0);
 
+export const selectShippingCost = (state: { cart: CartState }) => {
+  const total = selectCartTotal(state);
+  return total > 0 ? Math.round(total * 0.05) : 0; // 5% dynamic shipping cost
+};
+
 export {
   fetchCart,
   addToCartAsync,
