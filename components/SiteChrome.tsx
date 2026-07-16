@@ -178,8 +178,9 @@ const Header = ({
   }
 
   return (
-    <div
-      className={`w-full z-[1200] transition-all duration-300 ${
+    <>
+      <div
+        className={`w-full z-[1200] transition-all duration-300 ${
         isScrolled
           ? "fixed top-0 left-0 animate-in slide-in-from-top-2"
           : isTransparent
@@ -423,6 +424,7 @@ const Header = ({
           </div>
         </div>
       </header>
+      </div>
 
       {/* Menu Drawer */}
       <AnimatePresence>
@@ -649,7 +651,7 @@ const Header = ({
           </>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 
