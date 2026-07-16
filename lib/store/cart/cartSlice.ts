@@ -9,6 +9,7 @@ import {
   clearCartAsync,
 } from "./cartThunk";
 
+
 export interface CartItem extends ProductFormState {
   quantity: number;
   selectedOptions: {
@@ -167,5 +168,18 @@ export const selectCartTotal = (state: { cart: CartState }) =>
       return total + price * item.quantity;
     }
   }, 0);
+
+export const selectShippingCost = (state: { cart: CartState }) => {
+  const total = selectCartTotal(state);
+  return total > 0 ? Math.round(total * 0.05) : 0; // 5% dynamic shipping cost
+};
+
+export {
+  fetchCart,
+  addToCartAsync,
+  updateQuantityAsync,
+  removeFromCartAsync,
+  clearCartAsync,
+};
 
 export default cartSlice.reducer;
