@@ -9,6 +9,7 @@ import {
   clearCartAsync,
 } from "./cartThunk";
 
+
 export interface CartItem extends ProductFormState {
   quantity: number;
   selectedOptions: {
