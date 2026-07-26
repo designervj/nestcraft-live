@@ -2,13 +2,11 @@ import { NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
-import { authenticateAdmin } from "@/lib/auth";
+import { authorizeCommerceAdmin } from "@/lib/commerce-admin";
 
 export async function POST(req: Request) {
-  const auth = await authenticateAdmin();
-  if (!auth) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
 
   try {
     const formData = await req.formData();

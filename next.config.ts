@@ -1,9 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Tie build ID to deployment timestamp so each deploy gets unique chunk hashes
+  // Deployments can provide a stable revision; local builds remain reproducible.
   generateBuildId: async () => {
-    return `build-${Date.now()}`;
+    return process.env.NEXT_BUILD_ID?.trim() || 'local';
   },
 
   images: {

@@ -1,5 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { proxyRequest } from "@/lib/apiProxy";
+import { authorizeCommerceAdmin } from "@/lib/commerce-admin";
+
+const CATALOG_MUTATION_RESOURCES = new Set([
+  "products",
+  "categories",
+  "attributes",
+  "attribute-sets",
+  "variants",
+  "upload",
+]);
+
+function isCatalogMutation(req: NextRequest, slug: string[]) {
+  return (
+    slug[0] === "commerce" &&
+    CATALOG_MUTATION_RESOURCES.has(slug[1] ?? "") &&
+    ["POST", "PUT", "PATCH", "DELETE"].includes(req.method)
+  );
+}
 
 export async function GET(req: NextRequest, context: { params: Promise<{ slug?: string[] }> }) {
   return handleProxy(req, context);
@@ -26,6 +44,11 @@ async function handleProxy(req: NextRequest, context: { params: Promise<{ slug?:
   
   if (!slug || slug.length === 0) {
     return NextResponse.json({ error: "Invalid API endpoint" }, { status: 404 });
+  }
+
+  if (isCatalogMutation(req, slug)) {
+    const authorization = await authorizeCommerceAdmin();
+    if (!authorization.authorized) return authorization.response;
   }
 
   const base = slug[0];

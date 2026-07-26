@@ -1,10 +1,15 @@
 require('dotenv').config();
 
 const { MongoClient } = require("mongodb");
-const MONGODB_URI = "mongodb+srv://vijendrajat693_db_user:6Zdxvnim3i5DnJQq@vj-cluster.mg6hzxx.mongodb.net/";
+
+function requireMongoUri() {
+  const uri = process.env.MONGODB_URI?.trim();
+  if (!uri) throw new Error("MONGODB_URI is required");
+  return uri;
+}
 
 async function main() {
-  const client = await MongoClient.connect(MONGODB_URI);
+  const client = await MongoClient.connect(requireMongoUri());
   console.log("Connected to MongoDB cluster");
   
   const admin = client.db().admin();

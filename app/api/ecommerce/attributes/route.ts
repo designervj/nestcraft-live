@@ -55,6 +55,7 @@
 // }
 
 import { connectTenantDB } from "@/lib/db";
+import { authorizeCommerceAdmin } from "@/lib/commerce-admin";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -81,6 +82,9 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const searchParams = req.nextUrl.searchParams;
     const id = searchParams.get("id");
@@ -116,6 +120,9 @@ export async function PUT(req: NextRequest) {
   }
 }
 export async function POST(req: NextRequest) {
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const body = await req.json();
     const db = await connectTenantDB();
@@ -135,6 +142,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const searchParams = req.nextUrl.searchParams;
     const id = searchParams.get("id");

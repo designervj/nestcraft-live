@@ -1,9 +1,13 @@
 const { MongoClient } = require("mongodb");
 
-const MONGODB_URI = "mongodb+srv://deepakr_db_user:4oYOhDfezDMn2jCN@kalpcluster.mr8bacs.mongodb.net/";
+function requireMongoUri() {
+  const uri = process.env.MONGODB_URI?.trim();
+  if (!uri) throw new Error("MONGODB_URI is required");
+  return uri;
+}
 
 async function listPages() {
-  const client = new MongoClient(MONGODB_URI);
+  const client = new MongoClient(requireMongoUri());
   try {
     await client.connect();
     const db = client.db("kalp_tenant_furni");

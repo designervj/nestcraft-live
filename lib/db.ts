@@ -1,61 +1,78 @@
 import { MongoClient, Db } from "mongodb";
+import { getConfiguredDatabaseName } from "@/lib/database-authority";
 
-let MONGODB_URI = process.env.MONGODB_URI;
-
-// Bypass DNS SRV errors (ECONNREFUSED) by mapping to direct IP/hostname records for the MongoDB cluster
-if (
-  MONGODB_URI?.startsWith("mongodb+srv://") &&
-  MONGODB_URI.includes("@kalpcluster.mr8bacs.mongodb.net")
-) {
-  MONGODB_URI = MONGODB_URI.replace(
-    "@kalpcluster.mr8bacs.mongodb.net/",
-    "@ac-zxbieql-shard-00-00.mr8bacs.mongodb.net:27017,ac-zxbieql-shard-00-01.mr8bacs.mongodb.net:27017,ac-zxbieql-shard-00-02.mr8bacs.mongodb.net:27017/?ssl=true&replicaSet=atlas-vw7phq-shard-0&authSource=admin&retryWrites=true&w=majority",
-  ).replace("mongodb+srv://", "mongodb://");
+interface MongoClientCache {
+  conn: MongoClient | null;
+  promise: Promise<MongoClient> | null;
 }
 
-const TENANT_DB_NAME = process.env.NEXT_PUBLIC_TENANT_ID;
+type MongoClientProvider = () => Promise<Pick<MongoClient, "db">>;
 
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env",
-  );
+const globalWithMongo = globalThis as typeof globalThis & {
+  mongoClient?: MongoClientCache;
+};
+
+function getMongoUri(): string {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error(
+      "Please define the MONGODB_URI environment variable inside .env",
+    );
+  }
+
+  // Preserve the existing direct-host fallback for this Atlas cluster.
+  if (
+    uri.startsWith("mongodb+srv://") &&
+    uri.includes("@kalpcluster.mr8bacs.mongodb.net")
+  ) {
+    return uri
+      .replace(
+        "@kalpcluster.mr8bacs.mongodb.net/",
+        "@ac-zxbieql-shard-00-00.mr8bacs.mongodb.net:27017,ac-zxbieql-shard-00-01.mr8bacs.mongodb.net:27017,ac-zxbieql-shard-00-02.mr8bacs.mongodb.net:27017/?ssl=true&replicaSet=atlas-vw7phq-shard-0&authSource=admin&retryWrites=true&w=majority",
+      )
+      .replace("mongodb+srv://", "mongodb://");
+  }
+
+  return uri;
 }
 
-// if (!TENANT_DB_NAME) {
-//   throw new Error(
-//     "Please define the TENANT_DB_NAME environment variable inside .env",
-//   );
-// }
-
-let cachedClient = (global as any).mongoClient;
-
-if (!cachedClient) {
-  cachedClient = (global as any).mongoClient = { conn: null, promise: null };
+function getClientCache(): MongoClientCache {
+  if (!globalWithMongo.mongoClient) {
+    globalWithMongo.mongoClient = { conn: null, promise: null };
+  }
+  return globalWithMongo.mongoClient;
 }
 
 export async function connectClient(): Promise<MongoClient> {
-  if (cachedClient.conn) return cachedClient.conn;
+  const cache = getClientCache();
+  if (cache.conn) return cache.conn;
 
-  if (!cachedClient.promise) {
-    cachedClient.promise = MongoClient.connect(MONGODB_URI as string);
+  if (!cache.promise) {
+    cache.promise = MongoClient.connect(getMongoUri());
   }
 
   try {
-    cachedClient.conn = await cachedClient.promise;
-  } catch (e) {
-    cachedClient.promise = null;
-    throw e;
+    cache.conn = await cache.promise;
+  } catch (error) {
+    cache.promise = null;
+    throw error;
   }
 
-  return cachedClient.conn;
+  return cache.conn;
 }
 
-export async function connectMasterDB(): Promise<Db> {
-  const client = await connectClient();
-  return client.db("kalp_master");
+export async function connectMasterDB(
+  getClient: MongoClientProvider = connectClient,
+): Promise<Db> {
+  const databaseName = getConfiguredDatabaseName();
+  const client = await getClient();
+  return client.db(databaseName);
 }
 
-export async function connectTenantDB(): Promise<Db> {
-  const client = await connectClient();
-  return client.db(TENANT_DB_NAME);
+export async function connectTenantDB(
+  getClient: MongoClientProvider = connectClient,
+): Promise<Db> {
+  const databaseName = getConfiguredDatabaseName();
+  const client = await getClient();
+  return client.db(databaseName);
 }

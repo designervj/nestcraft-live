@@ -1,4 +1,5 @@
 import { connectTenantDB } from "@/lib/db";
+import { authorizeCommerceAdmin } from "@/lib/commerce-admin";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -75,6 +76,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const db = await connectTenantDB();
     const productColl = db.collection("products");
@@ -110,6 +114,9 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const productId = request.nextUrl.searchParams.get("id");
     if (!productId) {
@@ -176,6 +183,9 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
+
   try {
     const productId = request.nextUrl.searchParams.get("id");
     if (!productId) {
