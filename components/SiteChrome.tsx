@@ -91,6 +91,52 @@ const normalizeLogoUrl = (raw?: string) => {
   return trimmed;
 };
 
+const pickLogoUrl = (brandConfig: any) =>
+  normalizeLogoUrl(
+    brandConfig?.logoUrl ||
+      brandConfig?.publicProfile?.logoUrl ||
+      brandConfig?.publicProfile?.logo ||
+      brandConfig?.brandKit?.logo?.primary ||
+      brandConfig?.brandKit?.logo?.icon ||
+      brandConfig?.business?.brand?.logoRef ||
+      brandConfig?.business?.brand?.businessDna?.logoUrl ||
+      brandConfig?.logos?.find((logo: any) => logo.id === "primary" || logo.id === "primary-logo")?.url ||
+      brandConfig?.logos?.[0]?.url,
+  );
+
+const pickFaviconUrl = (brandConfig: any) =>
+  brandConfig?.faviconUrl ||
+  brandConfig?.brandKit?.logo?.favicon ||
+  brandConfig?.brandKit?.faviconUrl ||
+  brandConfig?.business?.brand?.faviconRef ||
+  brandConfig?.business?.brand?.businessDna?.faviconUrl ||
+  "/assets/Image/favicon.svg";
+
+function applyFavicon(href: string) {
+  if (!href || typeof document === "undefined") return;
+  const selectors = ['link[rel="icon"]', 'link[rel="shortcut icon"]', 'link[rel="apple-touch-icon"]'];
+  for (const selector of selectors) {
+    let link = document.querySelector<HTMLLinkElement>(selector);
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = selector.includes("apple") ? "apple-touch-icon" : selector.includes("shortcut") ? "shortcut icon" : "icon";
+      document.head.appendChild(link);
+    }
+    link.href = href;
+  }
+}
+
+function applyLogoImages(href: string) {
+  if (!href || href === DEFAULT_LOGO || typeof document === "undefined") return;
+  const logoImages = document.querySelectorAll<HTMLImageElement>(
+    'img[src*="nestcraft-logo"], img[alt*="NestCraft"], img[alt*="Nestcraft"]',
+  );
+  logoImages.forEach((image) => {
+    image.src = href;
+    image.srcset = "";
+  });
+}
+
 // --- 3-Tier Header Component ---
 const Header = ({
   theme,
@@ -178,8 +224,9 @@ const Header = ({
   }
 
   return (
-    <div
-      className={`w-full z-[1200] transition-all duration-300 ${
+    <>
+      <div
+        className={`w-full z-[1200] transition-all duration-300 ${
         isScrolled
           ? "fixed top-0 left-0 animate-in slide-in-from-top-2"
           : isTransparent
@@ -423,6 +470,7 @@ const Header = ({
           </div>
         </div>
       </header>
+      </div>
 
       {/* Menu Drawer */}
       <AnimatePresence>
@@ -649,7 +697,7 @@ const Header = ({
           </>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 };
 
@@ -952,6 +1000,7 @@ export default function SiteChrome({
 }) {
   const [theme, setTheme] = useState("light");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [liveBrandConfig, setLiveBrandConfig] = useState(brandConfig);
   const pathname = usePathname();
   
   const [isScrolled, setIsScrolled] = useState(false);
@@ -1006,6 +1055,33 @@ export default function SiteChrome({
     setIsSearchOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    setLiveBrandConfig(brandConfig);
+  }, [brandConfig]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const refreshBranding = () => fetch(`/api/branding/current?t=${Date.now()}`, { cache: "no-store", credentials: "include" })
+      .then((response) => response.ok ? response.json() : null)
+      .then((body) => {
+        if (cancelled || !body?.branding) return;
+        const logo = pickLogoUrl(body.branding);
+        setLiveBrandConfig(body.branding);
+        applyLogoImages(logo);
+        applyFavicon(pickFaviconUrl(body.branding));
+      })
+      .catch(() => undefined);
+    void refreshBranding();
+    const onVisible = () => { if (document.visibilityState === "visible") void refreshBranding(); };
+    window.addEventListener("focus", refreshBranding);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", refreshBranding);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
@@ -1013,12 +1089,9 @@ export default function SiteChrome({
     localStorage.setItem("theme", newTheme);
   };
 
-  const primaryLogo = normalizeLogoUrl(
-    brandConfig?.logos?.find((l: any) => l.id === "primary")?.url ||
-      brandConfig?.logos?.[0]?.url,
-  );
+  const primaryLogo = pickLogoUrl(liveBrandConfig);
 
-  const companyName = brandConfig?.companyInfo?.name || "NestCraft";
+  const companyName = liveBrandConfig?.companyInfo?.name || "NestCraft";
 
   const cartCount = useAppSelector(selectCartCount);
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
@@ -1046,7 +1119,7 @@ export default function SiteChrome({
       <Footer
         logoUrl={primaryLogo}
         companyName={companyName}
-        brandConfig={brandConfig}
+        brandConfig={liveBrandConfig}
       />
 
       {/* Mobile Bottom Navigation Bar */}

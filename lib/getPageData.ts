@@ -14,6 +14,89 @@ function serialize(obj: any): any {
   );
 }
 
+function text(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function firstText(...values: unknown[]): string {
+  for (const value of values) {
+    const current = text(value);
+    if (current) return current;
+  }
+  return "";
+}
+
+function buildBrandConfigFromBlueprint(payload: any, fallback: any) {
+  const business = payload?.business || {};
+  const brand = business?.brand || {};
+  const brandKit = payload?.brandKit || fallback?.brandKit || {};
+  const publicProfile = payload?.publicProfile || fallback?.publicProfile || {};
+  const fallbackLogo = Array.isArray(fallback?.logos) ? fallback.logos[0]?.url : "";
+  const logoUrl = firstText(
+    brand.logoRef,
+    brand.businessDna?.logoUrl,
+    publicProfile.logoUrl,
+    publicProfile.logo,
+    brandKit.logo?.primary,
+    brandKit.logo?.icon,
+    fallbackLogo,
+  );
+  const faviconUrl = firstText(
+    brand.faviconRef,
+    brand.businessDna?.faviconUrl,
+    brandKit.logo?.favicon,
+    brandKit.faviconUrl,
+    fallback?.faviconUrl,
+  );
+  return {
+    ...(fallback || {}),
+    ...payload,
+    type: fallback?.type || "branding",
+    logoUrl,
+    faviconUrl,
+    publicProfile: { ...publicProfile, logo: logoUrl, logoUrl },
+    brandKit: {
+      ...brandKit,
+      logo: { ...(brandKit.logo || {}), primary: logoUrl, light: logoUrl, icon: logoUrl, favicon: faviconUrl },
+      faviconUrl,
+    },
+    companyInfo: {
+      ...(fallback?.companyInfo || {}),
+      name: firstText(business.name, fallback?.companyInfo?.name, "NestCraft"),
+      tagline: firstText(brand.tagline, brand.businessDna?.tagline, fallback?.companyInfo?.tagline),
+    },
+    logos: logoUrl
+      ? [{ id: "primary", url: logoUrl, alt: `${firstText(business.name, fallback?.companyInfo?.name, "NestCraft")} logo`, width: 120, height: 40 }]
+      : fallback?.logos || [],
+  };
+}
+
+async function getRemoteBrandingConfig(fallback: any) {
+  const configuredApiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const apiCandidates = process.env.NODE_ENV === "production"
+    ? [configuredApiUrl]
+    : ["http://localhost:5177", configuredApiUrl];
+  const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || "";
+  const tenantSlug = process.env.NEXT_PUBLIC_TENANT_SLUG || tenantId.replace(/^kalp_tenant_/, "") || "nestcraft";
+  if (!tenantId) return null;
+  for (const apiUrl of apiCandidates.filter(Boolean)) {
+    try {
+      const res = await fetch(`${apiUrl}/api/cms/business-blueprint`, {
+        method: "GET",
+        headers: { "x-tenant-db": tenantId, "tenant-slug": tenantSlug, "x-tenant-slug": tenantSlug },
+        cache: "no-store",
+      });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const payload = json?.data?.payload || json?.data || json;
+      return buildBrandConfigFromBlueprint(payload, fallback);
+    } catch (error) {
+      console.error("Failed to load remote branding config", error);
+    }
+  }
+  return null;
+}
+
 export const getPageData = cache(async (slug: string) => {
   const tenantId = process.env.NEXT_PUBLIC_TENANT_ID || "";
   const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -94,7 +177,9 @@ export const getTenantRegistry = cache(async () => {
 
   const tenant = await tenantRegistry.findOne({ type: "branding" });
 
-  return serialize(tenant);
+  const localConfig = serialize(tenant);
+  const remoteConfig = await getRemoteBrandingConfig(localConfig);
+  return serialize(remoteConfig || localConfig);
 });
 
 export const getBusinessBlueprint = cache(async () => {
