@@ -4688,9 +4688,10 @@ TARGET 42: .env.local template
 # ENVIRONMENT VARIABLES
 # ============================================================
 
-MONGODB_URI=mongodb+srv://deepakr_db_user:4oYOhDfezDMn2jCN@kalpcluster.mr8bacs.mongodb.net/
+# Supply server-only secrets through the runtime environment or secret manager.
+MONGODB_URI=
 NEXT_PUBLIC_ENVIRONMENT=dev
-JWT_SECRET=kalp-zero-production-secret-replace-me-in-prod
+JWT_SECRET=
 
 FASTAPI_URL=http://localhost:8000
 NEXT_PUBLIC_TENANT_ID=kp_nestcraft

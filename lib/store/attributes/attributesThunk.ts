@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AttributeSetRecord } from "./attributeSlices";
 
 const tenantHeader = process.env.NEXT_PUBLIC_TENANT_ID;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface ApiError {
   message: string;
@@ -47,7 +46,7 @@ export const createAttributeSet = createAsyncThunk<
   { rejectValue: ApiError }
 >("attributes/createAttributeSet", async (payload, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/commerce/attributes`, {
+    const res = await fetch("/api/commerce/attributes", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +78,7 @@ export const updateAttributeSet = createAsyncThunk<
   "attributes/updateAttributeSet",
   async ({ id, payload }, { rejectWithValue }) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/commerce/attributes/${id}`, {
+      const res = await fetch(`/api/commerce/attributes/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -165,4 +164,3 @@ export const bulkImportAttributes = createAsyncThunk<
     });
   }
 });
-

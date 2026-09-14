@@ -4247,7 +4247,7 @@ MONGODB_URI=mongodb://localhost:27017
 MONGODB_DB={{PROJECT_SLUG}}_store
 
 # Authentication
-JWT_SECRET=your-super-secret-jwt-key-min-32-chars
+JWT_SECRET=
 
 # Backend API (Blueprint)
 BACKEND_API_URL=http://localhost:8000
@@ -4255,7 +4255,7 @@ NEXT_PUBLIC_TENANT_DB={{CURRENT_TENANT_DB_HEADER}}
 
 # Payment Gateway (Razorpay)
 NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_xxx
-RAZORPAY_KEY_SECRET=xxx
+RAZORPAY_KEY_SECRET=
 
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -4270,7 +4270,7 @@ NEXT_PUBLIC_FREE_SHIPPING_THRESHOLD={{FREE_SHIPPING_THRESHOLD}}
 NEXT_PUBLIC_TAX_RATE=18
 
 # Google Maps API (optional)
-NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 ```
 
 ===

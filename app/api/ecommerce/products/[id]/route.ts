@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProductModel, getVariantModel } from "@/models";
-import { authenticateAdmin } from "@/lib/auth";
+import { authorizeCommerceAdmin } from "@/lib/commerce-admin";
 import { ObjectId } from "mongodb";
 import { connectTenantDB } from "@/lib/db";
 import { isHex } from "@/app/api/ecommerce/categories/util";
@@ -89,12 +89,11 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-  const auth = await authenticateAdmin();
-  if (!auth)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
 
   try {
+    const { id } = await params;
     const body = await req.json();
     const Product = await getProductModel();
     const Variant = await getVariantModel();
@@ -142,12 +141,11 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  const { id } = await params;
-  const auth = await authenticateAdmin();
-  if (!auth)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
 
   try {
+    const { id } = await params;
     const Product = await getProductModel();
     const Variant = await getVariantModel();
 

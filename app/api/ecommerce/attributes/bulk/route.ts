@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
 import { connectTenantDB } from "@/lib/db";
-import { authenticateAdmin } from "@/lib/auth";
+import { authorizeCommerceAdmin } from "@/lib/commerce-admin";
 
 export async function POST(req: Request) {
-  const auth = await authenticateAdmin();
-  if (!auth)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const authorization = await authorizeCommerceAdmin();
+  if (!authorization.authorized) return authorization.response;
 
   try {
     const attributesPayload = await req.json();

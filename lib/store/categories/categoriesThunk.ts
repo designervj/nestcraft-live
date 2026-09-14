@@ -2,7 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { CategoryRecord } from "./categoriesSlices";
 
 const tenantHeader = process.env.NEXT_PUBLIC_TENANT_ID;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface ApiError {
   message: string;
@@ -56,7 +55,7 @@ export const createCategory = createAsyncThunk<
   { rejectValue: ApiError }
 >("categories/createCategory", async (payload, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/commerce/categories`, {
+    const res = await fetch("/api/commerce/categories", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +85,7 @@ export const updateCategory = createAsyncThunk<
   { rejectValue: ApiError }
 >("categories/updateCategory", async ({ id, payload }, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/commerce/categories/${id}`, {
+    const res = await fetch(`/api/commerce/categories/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -116,7 +115,7 @@ export const deleteCategory = createAsyncThunk<
   { rejectValue: ApiError }
 >("categories/deleteCategory", async (id, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/commerce/categories/${id}`, {
+    const res = await fetch(`/api/commerce/categories/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -145,7 +144,7 @@ export const bulkImportCategories = createAsyncThunk<
   { rejectValue: ApiError }
 >("categories/bulkImport", async (categories, { rejectWithValue }) => {
   try {
-    const res = await fetch(`${API_BASE_URL}/commerce/categories/bulk`, {
+    const res = await fetch("/api/commerce/categories/bulk", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

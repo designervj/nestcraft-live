@@ -1,7 +1,12 @@
 const { MongoClient } = require('mongodb');
 
-const uri = "mongodb+srv://deepakr_db_user:4oYOhDfezDMn2jCN@kalpcluster.mr8bacs.mongodb.net/";
 const dbName = "kalp_tenant_furni";
+
+function requireMongoUri() {
+  const uri = process.env.MONGODB_URI?.trim();
+  if (!uri) throw new Error("MONGODB_URI is required");
+  return uri;
+}
 
 const wsCategories = [
   {
@@ -325,7 +330,7 @@ async function run() {
 
   console.log(`Generated ${flatCategories.length} categories to insert.`);
 
-  const client = new MongoClient(uri);
+  const client = new MongoClient(requireMongoUri());
   try {
     await client.connect();
     const db = client.db(dbName);

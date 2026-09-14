@@ -4,8 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { getJwtSecret } from "@/lib/auth-secret";
 
 const getSessionId = async () => {
   const cookieStore = await cookies();
@@ -25,9 +24,12 @@ const getSessionId = async () => {
 const getUserId = async () => {
   const cookieStore = await cookies();
   let userId = cookieStore.get("kalp_session")?.value;
-  if (!userId || !JWT_SECRET) return null;
-  let verify = jwt.verify(userId, JWT_SECRET);
-  return verify;
+  if (!userId) return null;
+  try {
+    return jwt.verify(userId, getJwtSecret());
+  } catch {
+    return null;
+  }
 };
 
 export async function GET() {

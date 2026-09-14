@@ -1,18 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import { getMongoClient } from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
-
-const dbName = process.env.DB_NAME;
-
-function getDbName(req: NextRequest): string {
-    return req.headers.get("x-tenant-db") || dbName || "test";
-}
+import { getConfiguredDatabaseName } from "@/lib/database-authority";
 
 //get all pages
 export async function GET(req: NextRequest) {
     try {
-        const client = await clientPromise;
-        const db = client.db(getDbName(req));
+        const databaseName = getConfiguredDatabaseName();
+        const client = await getMongoClient();
+        const db = client.db(databaseName);
         const pages = await db.collection("comments").find({}).toArray();
         return NextResponse.json({ success: true, pages });
     } catch (error) {
@@ -24,8 +20,9 @@ export async function GET(req: NextRequest) {
 // post comments
 export async function POST(req: NextRequest) {
     try {
-        const client = await clientPromise;
-        const db = client.db(getDbName(req));
+        const databaseName = getConfiguredDatabaseName();
+        const client = await getMongoClient();
+        const db = client.db(databaseName);
         const comment = await req.json();
         const result = await db.collection("comments").insertOne(comment);
         console.log("result", result)
@@ -40,8 +37,9 @@ export async function POST(req: NextRequest) {
 // update comments
 export async function PUT(req: NextRequest) {
     try {
-        const client = await clientPromise;
-        const db = client.db(getDbName(req));
+        const databaseName = getConfiguredDatabaseName();
+        const client = await getMongoClient();
+        const db = client.db(databaseName);
         const comment = await req.json();
         
         const { _id, ...updateData } = comment;
@@ -70,8 +68,9 @@ export async function PUT(req: NextRequest) {
 // delete comments
 export async function DELETE(req: NextRequest) {
     try {
-        const client = await clientPromise;
-        const db = client.db(getDbName(req));
+        const databaseName = getConfiguredDatabaseName();
+        const client = await getMongoClient();
+        const db = client.db(databaseName);
         const { searchParams } = new URL(req.url);
         const id = searchParams.get("id");
 
